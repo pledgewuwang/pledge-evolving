@@ -21,7 +21,7 @@ import re
 from typing import Any, Dict, List, Optional
 
 MODULE_API_VERSION = 1
-SELFTEST_CASES = 16  # 新增 1 条：同 server 前缀后重名 → dropped
+SELFTEST_CASES = 18  # K3 修复轮：+2（非法 server 名整批 dropped / health 非数字时钟安全）
 
 
 # ---------------------------------------------------------------------------
@@ -89,7 +89,6 @@ def plan_servers(
                 run_idx[n] = r
 
     seen: set = set()
-    first_names: List[str] = []  # 按首次出现顺序保留
 
     for raw in configs:
         if not isinstance(raw, dict):
@@ -103,7 +102,6 @@ def plan_servers(
             warnings.append(f"duplicate server config, keeping first: {name!r}")
             continue
         seen.add(name)
-        first_names.append(name)
 
         # enabled 默认 True
         enabled = raw.get("enabled", True)
@@ -157,6 +155,15 @@ def discover(
     tools: List[Dict[str, Any]] = []
     dropped: List[Dict[str, Any]] = []
     seen_final: set = set()  # final_name 跨 raw_tools 去重
+
+    # K3-#3：server_name 非法（含空格等）时前缀化必产出非法工具名，下游
+    # register_tools 会整批丢弃——在这里前置拦截，整批进 dropped 并写明
+    # 根因，而不是把问题遇伏到下一层。
+    if server_name and not _is_valid_name(server_name):
+        for raw in (raw_tools or []):
+            dropped.append({"raw": raw,
+                            "reason": f"invalid server name: {server_name!r}"})
+        return {"server": server_name, "tools": tools, "dropped": dropped}
 
     if not raw_tools:
         return {"server": server_name, "tools": tools, "dropped": dropped}
@@ -224,6 +231,11 @@ def health(
 
     if not isinstance(stale_after, (int, float)) or stale_after <= 0:
         stale_after = 300.0
+
+    # K3-#4：now 非数字（如 None）时不崩——时钟缺失比 TypeError 好：
+    # 无法判龄的 starting 一律归 unknown（保守方向，与无 started_at 同道）。
+    if not isinstance(now, (int, float)):
+        now = 0.0
 
     for r in running:
         if not isinstance(r, dict):
@@ -444,8 +456,7 @@ def selftest() -> List[tuple[str, bool, str]]:
         _bad("failed+disabled → stop", str(r))
 
     # 16. 同 server 内前缀化后仍重名 → dropped（不静默覆盖）
-    # 构造：两个 raw 原始 name 不同但加前缀后撞了 —— 真实场景少见，
-    # 但当前 server_name 固定时原始 name 相同才撞；直接测原始 name 相同即可。
+    # 构造：两个 raw 原始 name 相同 → 前缀化后必撞（K3 修正注释：原“不同”表述误导）。
     r = discover({"name": "s"}, [
         {"name": "read_file", "inputSchema": {}},
         {"name": "read_file", "inputSchema": {}},  # 前缀化后仍是 s__read_file → 撞
@@ -456,6 +467,32 @@ def selftest() -> List[tuple[str, bool, str]]:
     else:
         _bad("同 server 前缀后重名 → dropped",
              f"tools={len(r['tools'])} dropped={len(r['dropped'])} dupe_reason={dupe_reason}")
+
+    # 17. K3-#3：非法 server 名（含空格）→ 整批 dropped 且根因明确，
+    # 不再把非法名遇伏给下游 register_tools 静默丢弃。
+    r = discover({"name": "my server"}, [
+        {"name": "read_file", "inputSchema": {}},
+        {"name": "write_file", "inputSchema": {}},
+    ])
+    bad_server = (len(r["tools"]) == 0 and len(r["dropped"]) == 2
+                  and all("invalid server name" in (d.get("reason") or "") for d in r["dropped"]))
+    if bad_server:
+        _ok("非法 server 名 → 整批 dropped 带根因")
+    else:
+        _bad("非法 server 名 → 整批 dropped 带根因",
+             f"tools={len(r['tools'])} dropped={len(r['dropped'])}")
+
+    # 18. K3-#4：health(now=None) 不崩——非数字时钟归 unknown（保守方向）
+    try:
+        r = health([{"name": "s1", "status": "starting", "started_at": 0}], now=None)
+        ok18 = "s1" in r.get("unknown", [])
+        detail18 = str(r)
+    except Exception as exc:  # noqa: BLE001
+        ok18, detail18 = False, f"raised {type(exc).__name__}: {exc}"
+    if ok18:
+        _ok("health(now=None) 不崩且归 unknown")
+    else:
+        _bad("health(now=None) 不崩且归 unknown", detail18)
 
     return results
 

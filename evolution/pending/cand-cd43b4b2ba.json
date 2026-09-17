@@ -1,0 +1,27 @@
+{
+  "id": "cand-cd43b4b2ba",
+  "kind": "note",
+  "target": "evolution\\note-20260917.md",
+  "content": "- [pitfall] {\"round\": 97, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，将其三条要点（本季度完成的三件事、遗留问题、下季度重点）逐条写入 `outputs/summary.md`，采用 Markdown 无序列表格式，每条一行且内容均取自原文。\", \"seconds\": 8.6}, \"verdicts\": [\"最该立刻做：把这轮自检＋端到端冒烟固化为提交级 CI 门禁（重冒烟放 nightly）。\\n\\n理由：439/439、11/11、零隔离只证明\\\"当下是绿的\\\"——一份快照。没有持续门禁，接口漂移和骨架腐化会在下次改动中静默累积，等发现时已难归因。\", \"最需改进：**为真模型端到端测试引入外部参照数",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 97, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，将其三条要点（本季度完成的三件事、遗留问题、下季度重点）逐条写入 `outputs/summary.md`，采用 Markdown 无序列表格式，每条一行且内容均取自原文。\", \"seconds\": 8.6}, \"verdicts\": [\"最该立刻做：把这轮自检＋端到端冒烟固化为提交级 CI 门禁（重冒烟放 nightly）。\\n\\n理由：439/439、11/11、零隔离只证明\\\"当下是绿的\\\"——一份快照。没有持续门禁，接口漂移和骨架腐化会在下次改动中静默累积，等发现时已难归因。\", \"最需改进：**为真模型端到端测试引入外部参照数",
+      "session_id": "iteration-r97",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789636940.3408165
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789636940.3409593,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

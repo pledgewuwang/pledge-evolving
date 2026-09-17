@@ -19,3 +19,7 @@ logs/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# 本地工作区（AutoClaw）
+.openclaw/
+*.pyc

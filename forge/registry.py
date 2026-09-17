@@ -122,6 +122,12 @@ HOOK_ALIASES: dict[str, tuple[str, ...]] = {
     "authorize_hook": ("authorize_hook", "on_authorize_hook"),
     "dispatch": ("dispatch", "on_dispatch"),
     "describe": ("describe", "on_describe"),
+    # rev.4.1 接线轮：thinking 引擎的四个运行期消费名（同轮由 loop 消费，
+    # capability thinking.mode；converged 是库函数、不登记）。
+    "should_think": ("should_think", "on_should_think"),
+    "build_thinking_task": ("build_thinking_task", "on_build_thinking_task"),
+    "split_thinking": ("split_thinking", "on_split_thinking"),
+    "estimate_budget": ("estimate_budget", "on_estimate_budget"),
 }
 
 
@@ -195,13 +201,18 @@ class Contribution:
         return None
 
     def unresolvable_hooks(self) -> list[str]:
-        """Hooks no canonical name can reach — dead code by construction.
+        """Hooks outside the canonical vocabulary — no canonical consumer path.
 
-        A module can mount cleanly and still be useless if its hook name is not
-        in the alias table: nothing can ever call it. That is worth a warning,
-        not silence.
+        BS-1 (rev.4.1 接线轮): the vocabulary spans both the canonical keys
+        and their alias spellings. A hook outside it can still be found by a
+        same-name lookup — ``implementation()``/``hook()`` fall back to the
+        exact spelling when a consumer asks for it — but no *canonical*
+        resolution will ever reach it, so the warning records that instead
+        of claiming unreachability by any means.
         """
-        known = {alias for aliases in HOOK_ALIASES.values() for alias in aliases}
+        known = set(HOOK_ALIASES)
+        for aliases in HOOK_ALIASES.values():
+            known.update(aliases)
         return sorted(name for name in self.hooks if name not in known)
 
     def to_raw(self) -> dict[str, Any]:
@@ -325,6 +336,15 @@ class ModuleRegistry:
         if str(manifest.get("name")) != contribution.name:
             contribution.problems.append(
                 f"manifest name {manifest.get('name')!r} does not match file {contribution.name!r}"
+            )
+            return contribution
+
+        if "selftest" in contribution.hooks:
+            # rev.4.1 P0-1：hooks 键 ⊆ 规范词汇表的机械收口——selftest 是契约
+            # 入口、永远不是运行期钩子；出现即拒（不是警告）。
+            contribution.problems.append(
+                "'selftest' must never be declared as a runtime hook — it is a "
+                "contract entry, not a seat consumers can resolve"
             )
             return contribution
 
@@ -718,10 +738,16 @@ class ModuleRegistry:
         return out
 
     def hook(self, name: str) -> list[tuple[str, Any]]:
-        """Return ``(module_name, callable)`` for every module implementing a hook."""
+        """Return ``(module_name, callable)`` for every module implementing a hook.
+
+        BS-1 (rev.4.1 接线轮): one resolution semantics — this delegates to
+        ``Contribution.implementation`` so alias spellings (``on_*``) resolve
+        here exactly as they do for the mounted seats; a bare-name lookup used
+        to miss them silently.
+        """
         found: list[tuple[str, Any]] = []
         for contribution in self.healthy():
-            target = contribution.hooks.get(name)
+            target = contribution.implementation(name)
             if callable(target):
                 found.append((contribution.name, target))
         return found

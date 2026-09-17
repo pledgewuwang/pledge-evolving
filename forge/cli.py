@@ -23,7 +23,7 @@ from pathlib import Path
 
 from . import __version__
 from .config import USER_LAYER_NAME, Config, load_config
-from .loop import LoopLimits, build_agent
+from .loop import THINKING_MODES, LoopLimits, build_agent
 from .model import ModelRouter
 from .policy import Policy
 from .routing import STRATEGIES, SmartRouter
@@ -78,6 +78,17 @@ def cmd_run(args) -> int:
         merged["routing"] = routing_conf
         cfg.apply_patch([{"id": "model", "name": "model:router", "config": merged}],
                         label=f"strategy:{strategy}")
+    # --thinking 显式传参 > 配置层 thinking.mode > 默认 off。同样整行合并
+    # （apply_patch 是整行替换：先取原 thinking 行，防冲掉 notes 等键）。
+    thinking_mode = getattr(args, "thinking", None)
+    if thinking_mode:
+        if thinking_mode not in THINKING_MODES:
+            raise SystemExit(f"--thinking must be one of: {', '.join(THINKING_MODES)}")
+        think_row = cfg.row("thinking")
+        merged_t = dict(think_row.config) if think_row is not None else {}
+        merged_t["mode"] = thinking_mode
+        cfg.apply_patch([{"id": "thinking", "name": "thinking:mode", "config": merged_t}],
+                        label=f"thinking:{thinking_mode}")
     home = Path(args.home)
     workspace = Path(args.workspace or Path.cwd())
     # SmartRouter 换装：仅当配置层真的声明了 routing 时才升级路由器，
@@ -513,6 +524,10 @@ def build_parser() -> argparse.ArgumentParser:
                      help="model routing strategy: economy=cheapest-tier-first, "
                           "balanced=mid-tier-first (default), premium=mid-draft + "
                           "top-tier integration")
+    run.add_argument("--thinking", choices=list(THINKING_MODES), default=argparse.SUPPRESS,
+                     help="contemplation mode: off=never (default), "
+                          "smart=decide per task complexity (trigger words / long text), "
+                          "on=always")
     run.set_defaults(func=cmd_run)
 
     for name, func in (("dump-config", cmd_dump_config), ("dump-default-config", cmd_dump_config)):

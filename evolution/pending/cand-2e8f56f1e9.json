@@ -1,0 +1,43 @@
+{
+  "id": "cand-2e8f56f1e9",
+  "kind": "skill",
+  "target": "evolution\\skill-20260917.md",
+  "content": "- [workflow] {\"round\": 94, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 11.7}, \"verd\n- [pitfall] {\"round\": 94, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 11.7}, \"verd\n- [success] {\"round\": 94, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 11.7}, \"verd",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 94, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 11.7}, \"verd",
+      "session_id": "iteration-r94",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789631556.1942878
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 94, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 11.7}, \"verd",
+      "session_id": "iteration-r94",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789631556.194387
+    },
+    {
+      "kind": "success",
+      "text": "{\"round\": 94, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 11.7}, \"verd",
+      "session_id": "iteration-r94",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789631556.1944764
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789631556.1945293,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

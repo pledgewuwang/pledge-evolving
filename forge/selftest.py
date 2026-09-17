@@ -1757,12 +1757,20 @@ def test_global_optimizations() -> None:
     from .loop import mount_contrib_extensions
     from .types import Outcome, OutcomeClock, as_outcome
 
+    from .loop import ThinkingSuite as _ThinkingSuite
     seats = {"scheduler", "router", "teams", "curator", "compactor", "replay"}
     slots = mount_contrib_extensions(home=Path(tempfile.gettempdir()))
     check("global:contrib-modules-mounted", seats <= set(slots),
           f"slots={sorted(slots)}")
     check("global:mounted-hooks-callable",
-          all(callable(h) for h in slots.values()))
+          all(callable(h) or isinstance(h, _ThinkingSuite) for h in slots.values()))
+    check("global:thinking-suite-mounted",
+          isinstance(slots.get("thinking"), _ThinkingSuite)
+          and all(callable(getattr(slots["thinking"], name))
+                  for name in ("should_think", "build_thinking_task",
+                               "split_thinking", "estimate_budget", "converged",
+                               "looks_complex")),
+          f"suite={type(slots.get('thinking')).__name__}")
 
     # F2-2：home/contrib 用户安装模块必须被发现且可替换同名参考模块——
     # 挂载层曾只扫包内 contrib，用户模块永远不可见（g3 受控实验 F）
@@ -2904,6 +2912,232 @@ def _raises(fn) -> bool:
         return True
 
 
+def test_thinking_integration() -> None:
+    """thinking.mode（rev.4.1 接线轮）：套件挂载 + 运行期消费 + 门规回归。
+
+    证明四钩在真实运行里被调用（start=thinking / end=reflection 两相）、沉思
+    文本真实注入主跑消息、收敛提前终止真实生效；解析语义统一与 selftest 禁入
+    hooks 两条门规有受控夹具看守。
+    """
+    from .loop import ThinkingSuite, mount_contrib_extensions
+    from .registry import ContribAPI, ModuleRegistry
+
+    class ThinkTransport:
+        """固定返回带 <think> 的回复：相邻轮必然收敛 → 早停可断言。"""
+
+        def __init__(self) -> None:
+            self.calls: list[list[dict]] = []
+
+        def complete(self, provider, model, messages, **options):
+            self.calls.append([dict(m) for m in messages])
+            return ("<think>内部推演</think>考虑完毕，给出答案。",
+                    Usage(prompt_tokens=7, completion_tokens=3), {})
+
+    with tempfile.TemporaryDirectory() as tmp:
+        workspace = Path(tmp)
+        seats = mount_contrib_extensions(home=workspace)
+        suite = seats.get("thinking")
+        check("thinking:suite-mounted",
+              isinstance(suite, ThinkingSuite)
+              and all(callable(getattr(suite, name))
+                      for name in ("should_think", "build_thinking_task",
+                                   "split_thinking", "estimate_budget", "converged",
+                                   "looks_complex")),
+              f"suite={type(suite).__name__}")
+        if not isinstance(suite, ThinkingSuite):
+            return
+
+        transport = ThinkTransport()
+        router = ModelRouter([Provider(name="main", base_url="http://x")],
+                             transport=transport, chain=[("main", "m")],
+                             retries_per_provider=0)
+        agent = Agent(home=workspace, workspace=workspace, router=router,
+                      registry=build_builtin_registry(),
+                      policy=Policy(mode=Mode.PLAN, sandbox=Sandbox.WORKSPACE_WRITE,
+                                    workspace=workspace, non_interactive=True),
+                      limits=LoopLimits(max_steps=2),
+                      extensions=seats, thinking=True)
+        report = agent.run("分析这个任务的要点")
+
+        counts = agent.extension_calls
+        tc = {k: v for k, v in counts.items() if k.startswith("thinking.")}
+        for hook in ("estimate_budget", "should_think", "build_thinking_task",
+                     "split_thinking", "converged"):
+            check(f"thinking:consumed:{hook}", counts.get(f"thinking.{hook}", 0) >= 1,
+                  f"counts={tc}")
+
+        engaged = [e for e in report.events if e.get("type") == "thinking_engaged"]
+        phases = [e.get("phase") for e in engaged]
+        check("thinking:engaged-both-phases",
+              "thinking" in phases and "reflection" in phases, f"phases={phases}")
+        check("thinking:contemplation-injected",
+              any("<contemplation>" in str(m.get("content"))
+                  for call in transport.calls for m in call if isinstance(m, dict)),
+              f"calls={len(transport.calls)}")
+        ref = [e for e in engaged if e.get("phase") == "reflection"]
+        check("thinking:early-stop-converged",
+              bool(ref) and ref[0].get("stopped") == "converged"
+              and 0 < int(ref[0].get("rounds", 0)) < int(ref[0].get("budget", 0)),
+              f"reflection={ref[:1]}")
+        audit = [e for e in report.events if e.get("type") == "extension_calls"]
+        check("thinking:audit-covers-hooks",
+              bool(audit) and any(k.startswith("thinking.") for k in audit[-1].get("counts", {})),
+              f"audit={audit[-1] if audit else None}")
+
+        transport2 = ThinkTransport()
+        router2 = ModelRouter([Provider(name="main", base_url="http://x")],
+                              transport=transport2, chain=[("main", "m")],
+                              retries_per_provider=0)
+        agent2 = Agent(home=workspace, workspace=workspace, router=router2,
+                       registry=build_builtin_registry(),
+                       policy=Policy(mode=Mode.PLAN, workspace=workspace,
+                                     non_interactive=True),
+                       limits=LoopLimits(max_steps=1),
+                       extensions=seats)
+        agent2.run("chore")
+        check("thinking:off-by-default",
+              not any(k.startswith("thinking.") for k in agent2.extension_calls),
+              f"counts={agent2.extension_calls}")
+
+        # 三档模式（v2.2）：smart 由模块库函数 looks_complex 门控
+        smart_trivial = ThinkTransport()
+        router_s = ModelRouter([Provider(name="main", base_url="http://x")],
+                               transport=smart_trivial, chain=[("main", "m")],
+                               retries_per_provider=0)
+        agent3 = Agent(home=workspace, workspace=workspace, router=router_s,
+                       registry=build_builtin_registry(),
+                       policy=Policy(mode=Mode.PLAN, workspace=workspace,
+                                     non_interactive=True),
+                       limits=LoopLimits(max_steps=1),
+                       extensions=seats, thinking="smart")
+        agent3.run("chore")
+        tcounts3 = {k: v for k, v in agent3.extension_calls.items() if k.startswith("thinking.")}
+        check("thinking:smart-trivial-skips",
+              tcounts3.get("thinking.looks_complex") == 1 and len(tcounts3) == 1,
+              f"counts={tcounts3}")
+        check("thinking:smart-trivial-no-injection",
+              not any("<contemplation>" in str(m.get("content"))
+                      for call in smart_trivial.calls for m in call if isinstance(m, dict)),
+              f"calls={len(smart_trivial.calls)}")
+
+        smart_hard = ThinkTransport()
+        router_h = ModelRouter([Provider(name="main", base_url="http://x")],
+                               transport=smart_hard, chain=[("main", "m")],
+                               retries_per_provider=0)
+        agent4 = Agent(home=workspace, workspace=workspace, router=router_h,
+                       registry=build_builtin_registry(),
+                       policy=Policy(mode=Mode.PLAN, workspace=workspace,
+                                     non_interactive=True),
+                       limits=LoopLimits(max_steps=1),
+                       extensions=seats, thinking="smart")
+        report_h = agent4.run("分析这个任务的要点")
+        tcounts4 = {k: v for k, v in agent4.extension_calls.items() if k.startswith("thinking.")}
+        check("thinking:smart-complex-engages",
+              all(tcounts4.get(f"thinking.{hook}", 0) >= 1
+                  for hook in ("looks_complex", "estimate_budget", "should_think",
+                               "build_thinking_task", "split_thinking", "converged")),
+              f"counts={tcounts4}")
+        modes_ev = [e for e in report_h.events if e.get("type") == "thinking_mode"]
+        check("thinking:mode-event-recorded",
+              bool(modes_ev) and modes_ev[0].get("mode") == "smart"
+              and modes_ev[0].get("engaged") is True,
+              f"events={modes_ev[:1]}")
+
+        if agent.session is not None:
+            agent.session.close()
+        if agent2.session is not None:
+            agent2.session.close()
+        if agent3.session is not None:
+            agent3.session.close()
+        if agent4.session is not None:
+            agent4.session.close()
+
+    # 门规回归（BS-1）：解析语义统一 + selftest 禁入 hooks
+    with tempfile.TemporaryDirectory() as tmp:
+        home = Path(tmp)
+        contrib = home / "contrib"
+        contrib.mkdir()
+        fixtures = {
+            "same.py": (
+                "from __future__ import annotations\n"
+                "MODULE_API_VERSION = 1\n\n"
+                "def should_think(*a, **k):\n    return True\n\n"
+                "def register(api=None):\n"
+                "    return {'name': 'same', 'version': '1.0.0',\n"
+                "            'capabilities': ['demo'],\n"
+                "            'hooks': {'should_think': should_think}}\n\n"
+                "def selftest():\n"
+                "    return [(f'case-{i}', True, '') for i in range(8)]\n"
+            ),
+            "drifted.py": (
+                "from __future__ import annotations\n"
+                "MODULE_API_VERSION = 1\n\n"
+                "def on_tick(*a, **k):\n    return ['drift-hit']\n\n"
+                "def register(api=None):\n"
+                "    return {'name': 'drifted', 'version': '1.0.0',\n"
+                "            'capabilities': ['schedule.periodic'],\n"
+                "            'hooks': {'on_tick': on_tick}}\n\n"
+                "def selftest():\n"
+                "    return [(f'case-{i}', True, '') for i in range(8)]\n"
+            ),
+            "sneaky.py": (
+                "from __future__ import annotations\n"
+                "MODULE_API_VERSION = 1\n\n"
+                "def register(api=None):\n"
+                "    return {'name': 'sneaky', 'version': '1.0.0',\n"
+                "            'capabilities': ['demo'],\n"
+                "            'hooks': {'selftest': lambda: []}}\n\n"
+                "def selftest():\n"
+                "    return [(f'case-{i}', True, '') for i in range(8)]\n"
+            ),
+        }
+        for name, text in fixtures.items():
+            (contrib / name).write_text(text, encoding="utf-8")
+        api = ContribAPI(home=home, workspace=home)
+        reg = ModuleRegistry(api, contrib)
+        reg.discover()
+        same = reg.contributions.get("same")
+        check("thinking:same-name-resolves-via-aliases",
+              same is not None and same.ok
+              and callable(same.implementation("should_think"))
+              and bool(reg.hook("should_think"))
+              and same.unresolvable_hooks() == [],
+              f"dead={same.unresolvable_hooks() if same else None}")
+        drifted = reg.contributions.get("drifted")
+        check("thinking:hook-api-unified-across-alias",
+              drifted is not None and drifted.ok
+              and callable(drifted.implementation("due_jobs"))
+              and bool(reg.hook("due_jobs")),
+              f"hooks={sorted(drifted.hooks) if drifted else None}")
+        sneaky = reg.contributions.get("sneaky")
+        check("thinking:selftest-hook-rejected",
+              sneaky is not None and not sneaky.ok
+              and any("selftest" in p for p in sneaky.problems),
+              f"problems={sneaky.problems if sneaky else None}")
+
+    # BS-2 收口：占着索引、没有运行席位的模块必须被点名（warning 级）
+    with tempfile.TemporaryDirectory() as tmp2:
+        home2 = Path(tmp2)
+        (home2 / "contrib").mkdir()
+        (home2 / "contrib" / "frobnicator.py").write_text(
+            "from __future__ import annotations\n"
+            "MODULE_API_VERSION = 1\n\n"
+            "def register(api=None):\n"
+            "    return {'name': 'frobnicator', 'version': '1.0.0',\n"
+            "            'capabilities': ['nobody.consumes.this'],\n"
+            "            'hooks': {'waved_hands': lambda: 1}}\n\n"
+            "def selftest():\n"
+            "    return [(f'case-{i}', True, '') for i in range(8)]\n",
+            encoding="utf-8")
+        slots3, warns3 = mount_contrib_extensions(home=home2, return_warnings=True)
+        check("thinking:unseated-module-warned",
+              any("frobnicator" in w and "no runtime seat" in w for w in warns3),
+              str(warns3[:3]))
+        check("thinking:seated-modules-not-warned",
+              not any("'scheduler'" in w for w in warns3),
+              str(warns3[:4]))
+
+
 # ---------------------------------------------------------------------------
 
 def run_selftest(workspace: Path | None = None, *, verbose: bool = True) -> int:
@@ -2916,7 +3150,7 @@ def run_selftest(workspace: Path | None = None, *, verbose: bool = True) -> int:
         test_contrib_registry, test_contrib_integration, test_seam_probes, test_pricing, test_toolwire,
         test_smart_routing,
         test_native_tool_loop, test_smoke_harness_offline, test_global_optimizations,
-        test_contrib_runtime_service,
+        test_contrib_runtime_service, test_thinking_integration,
         test_loop_and_subagents, test_cli_surface, test_permission_profiles,
     ]
     for suite in suites:

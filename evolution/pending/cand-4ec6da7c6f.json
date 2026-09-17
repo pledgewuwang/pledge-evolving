@@ -1,0 +1,27 @@
+{
+  "id": "cand-4ec6da7c6f",
+  "kind": "note",
+  "target": "evolution\\note-20260917.md",
+  "content": "- [pitfall] {\"round\": 93, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n读取 `inputs/notes.md` 后，已提炼三条要点写入 `outputs/summary.md`，均为原文内容、Markdown 无序列表各占一行：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三\", \"seconds\": 10.2}, \"verdicts\": [\"**把这次真模型端到端冒烟固化为 CI 门禁（可重复的契约/快照测试）。**\\n\\n理由：439 项自检全绿说明单测与闸门骨架已成型，但端到端只跑了一次、无基线留痕。骨架越稳，越怕接口静默漂移——一旦",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 93, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n读取 `inputs/notes.md` 后，已提炼三条要点写入 `outputs/summary.md`，均为原文内容、Markdown 无序列表各占一行：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三\", \"seconds\": 10.2}, \"verdicts\": [\"**把这次真模型端到端冒烟固化为 CI 门禁（可重复的契约/快照测试）。**\\n\\n理由：439 项自检全绿说明单测与闸门骨架已成型，但端到端只跑了一次、无基线留痕。骨架越稳，越怕接口静默漂移——一旦",
+      "session_id": "iteration-r93",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789629727.2472696
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789629727.2475362,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

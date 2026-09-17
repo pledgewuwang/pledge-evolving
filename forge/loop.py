@@ -42,6 +42,37 @@ import time
 # tell "the seat failed" apart from "the seat legitimately returned nothing".
 _SEAT_FAILED = object()
 
+# thinking.mode（rev.4.1 沉思引擎）：多钩子套件席位。四个钩子必须整组来自同
+# 一模块（半组装套件一律不挂）；converged / RoundSpec 是模块契约公开的库/类型
+# 面（spec：供调用方直接使用，不登记 hooks），由挂载层直接取属性。计数写在
+# "thinking.<hook>" 名下，"挂载"与"真被调用"因此可分。
+THINKING_HOOKS = ("should_think", "build_thinking_task", "split_thinking", "estimate_budget")
+
+# 三档沉思模式（用户可选开关；smart 的判据 = 模块库函数 looks_complex）。
+THINKING_MODES = ("off", "smart", "on")
+
+
+def _normalise_thinking_mode(value: Any) -> str:
+    """bool 兼容（True→on / False→off）；未知值 → off（保守，不猜）。"""
+    if isinstance(value, bool):
+        return "on" if value else "off"
+    mode = str(value or "off").strip().lower()
+    return mode if mode in THINKING_MODES else "off"
+
+
+@dataclass(frozen=True)
+class ThinkingSuite:
+    """Runtime handle to a mounted thinking engine (capability thinking.mode)."""
+
+    module: str
+    should_think: Any
+    build_thinking_task: Any
+    split_thinking: Any
+    estimate_budget: Any
+    converged: Any = None
+    round_spec: Any = None
+    looks_complex: Any = None
+
 TOOL_CALL_RE = re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", re.S)
 
 # Subagent output is untrusted: a child must not be able to smuggle a directive
@@ -170,6 +201,7 @@ class Agent:
         accounting: dict[str, int] | None = None,
         mount_warnings: Iterable[str] | None = None,
         cost_ledger: "CostLedger | None" = None,
+        thinking: bool | str = False,
     ) -> None:
         self.home = Path(home)
         self.workspace = Path(workspace)
@@ -211,6 +243,13 @@ class Agent:
         # recent spend tightens the compaction threshold. None = scale on
         # list rates only.
         self.cost_ledger = cost_ledger
+        # thinking.mode 三档：off / smart（按任务复杂度智能选择，判据=模块
+        # 库函数 looks_complex）/ on；bool 兼容（True→on）。默认 off，成本护栏。
+        self.thinking_mode = _normalise_thinking_mode(thinking)
+        self.thinking = self.thinking_mode != "off"
+        self._run_task = ""
+        self._run_thinking_tokens = 0
+        self._run_thinking_active = False
         # H14: run-scoped pricing state (set per run()); _run_scope marks "an
         # un-recorded run is in flight on this agent" so nested/exited runs
         # cannot double-record one delta.
@@ -353,6 +392,8 @@ class Agent:
             # their tokens land in the parent's run delta, so a child must not
             # record its own entry (double counting).
             cost_ledger=None,
+            # 三档模式随树继承：子代理同样按模式在运行首尾起沉思。
+            thinking=self.thinking_mode,
         )
         self._emit(type="subagent_spawn", task=task[:300], mode=child_policy.mode.value,
                    depth=child.depth, budget_left=self.budget[0])
@@ -467,6 +508,98 @@ class Agent:
             return True
         return verdict
 
+    # -- thinking suite (capability thinking.mode) -------------------------
+    def _thinking_call(self, hook: str, *args: Any, **kwargs: Any) -> Any:
+        """Consult one hook of the mounted thinking suite; counted per hook.
+
+        与 _use_extension 同款纪律：套件缺席返回 None；钩子抛错记
+        extension_error 并返回 _SEAT_FAILED——沉思故障永远不拖垮主跑。
+        """
+        suite = self.extensions.get("thinking")
+        if suite is None:
+            return None
+        hook_fn = getattr(suite, hook, None)
+        if not callable(hook_fn):
+            return None
+        key = f"thinking.{hook}"
+        self.extension_calls[key] = self.extension_calls.get(key, 0) + 1
+        try:
+            return hook_fn(*args, **kwargs)
+        except Exception as exc:
+            self._emit(type="extension_error", module=key,
+                       error=f"{type(exc).__name__}: {exc}")
+            return _SEAT_FAILED
+
+    def _contemplate(self, phase: str, task: str, *, last_outputs: list[str]) -> "str | None":
+        """Run one phase's contemplation rounds (estimate→should→build→split→converged).
+
+        轮型序列取自模块 Budget（单一序列源）；相邻轮收敛判定消费模块公开的
+        库函数 converged（spec：供调用方直接使用——这里就是它的消费者）。
+        Returns contemplation text; None when not mounted / not engaged.
+        Emits thinking_engaged(phase, rounds, budget, stopped, chars, tokens).
+        """
+        suite = self.extensions.get("thinking")
+        if suite is None:
+            return None
+        budget = self._thinking_call(
+            "estimate_budget", phase,
+            task_size=len(str(task or "")), history_len=len(last_outputs))
+        if budget is None or budget is _SEAT_FAILED:
+            return None
+        engage = self._thinking_call("should_think", phase, budget=budget, last_result=None)
+        if engage is not True:
+            return None
+        round_types = tuple(getattr(budget, "round_types", ()) or ())
+        if not round_types:
+            self._emit(type="thinking_engaged", phase=phase, rounds=0, budget=0,
+                       stopped="empty-budget", chars=0, tokens=0)
+            return None
+        spec_cls = getattr(suite, "round_spec", None)
+        texts: list[str] = []
+        tokens = 0
+        stopped = "budget"
+        prev = ""
+        for round_type in round_types:
+            if callable(spec_cls):
+                spec: Any = spec_cls(round_type=str(round_type), prompt="", role="")
+            else:  # 模块未暴露 RoundSpec 类时走鸭子 dict（v2.1 兼容）
+                spec = {"round_type": str(round_type)}
+            row = self._thinking_call(
+                "build_thinking_task", phase, spec,
+                {"task": str(task or ""), "prior_outputs": list(texts)})
+            if not isinstance(row, dict) or row is _SEAT_FAILED:
+                break
+            msgs = row.get("messages") or []
+            if not msgs:
+                break
+            try:
+                completion = self.router.complete(msgs, small=True)
+            except TransportError as exc:
+                self._emit(type="thinking_transport_error", phase=phase, error=str(exc)[:200])
+                break
+            usage = getattr(completion, "usage", None)
+            if usage is not None:
+                tokens += int(getattr(usage, "prompt_tokens", 0)) + int(getattr(usage, "completion_tokens", 0))
+            split = self._thinking_call("split_thinking", getattr(completion, "text", "") or "")
+            if isinstance(split, tuple) and len(split) == 2:
+                thinking_part, answer_part = str(split[0]), str(split[1])
+            else:
+                thinking_part, answer_part = "", str(getattr(completion, "text", "") or "")
+            produced = (answer_part or thinking_part).strip()
+            if produced:
+                texts.append(produced)
+            if prev:
+                verdict_c = self._thinking_call("converged", prev, produced)
+                if verdict_c is True:
+                    stopped = "converged"
+                    break
+            prev = produced
+        notes = "\n\n".join(texts).strip()
+        self._run_thinking_tokens += tokens
+        self._emit(type="thinking_engaged", phase=phase, rounds=len(texts),
+                   budget=len(round_types), stopped=stopped, chars=len(notes), tokens=tokens)
+        return notes or None
+
     # -- main loop -------------------------------------------------------
     def run(self, task: str) -> RunReport:
         if self.session is not None:
@@ -481,6 +614,8 @@ class Agent:
         self._run_probe = probe
         self._run_model = probe.model or "unknown"
         self._run_scope = self.cost_ledger is not None
+        self._run_task = str(task)
+        self._run_thinking_tokens = 0
         # H11：挂载期席位接管/保底记录浮出到事件流，而不是静默换席。
         # WB P2：只在首次 run() 时发。
         if not self._mount_warnings_emitted:
@@ -491,6 +626,26 @@ class Agent:
             {"role": "system", "content": self.system_prompt()},
             {"role": "user", "content": task},
         ]
+        # 启动沉思（phase=thinking）：三档门控——off 不起；on 直接起；smart 由
+        # 模块库函数 looks_complex 决定（有运行期消费者，非装饰）。沉思文本
+        # 注入任务消息的 <contemplation> 段——消费者不是摆设，主跑真的用到它。
+        self._run_thinking_active = False
+        if self.thinking and "thinking" in self.extensions:
+            active = True
+            if self.thinking_mode == "smart":
+                active = self._thinking_call("looks_complex", str(task)) is True
+            self._run_thinking_active = active
+            self._emit(type="thinking_mode", mode=self.thinking_mode, engaged=active)
+            if active:
+                try:
+                    notes = self._contemplate("thinking", str(task), last_outputs=[])
+                except Exception as exc:
+                    notes = None
+                    self._emit(type="extension_error", module="thinking",
+                               error=f"{type(exc).__name__}: {exc}")
+                if notes:
+                    messages[1] = {"role": "user",
+                                   "content": f"{task}\n\n<contemplation>\n{notes[:4000]}\n</contemplation>"}
         steps: list[Step] = []
         usage_total = {"prompt_tokens": 0, "completion_tokens": 0}
         stopped = "max_steps"
@@ -636,6 +791,16 @@ class Agent:
         except Exception as exc:  # metabolism must never take the run down
             self._emit(type="extension_error", module="metabolise",
                        error=f"{type(exc).__name__}: {exc}")
+        # 结束反思（phase=reflection）：在 extension_calls 审计事件之前完成；
+        # 反思轮 token 并入账本 delta（诚实计费：沉思不是免费午餐）。smart
+        # 模式下未启用的跑次同样跳过反思（_run_thinking_active 在 run() 判定）。
+        if self._run_thinking_active and "thinking" in self.extensions:
+            try:
+                self._contemplate("reflection", self._run_task or "",
+                                  last_outputs=[str(report.text or "")])
+            except Exception as exc:
+                self._emit(type="extension_error", module="thinking",
+                           error=f"{type(exc).__name__}: {exc}")
         if self.extension_calls:
             self._emit(type="extension_calls", counts=dict(sorted(self.extension_calls.items())))
         # H14 (rev.H14-3.7): the ledger is written on EVERY exit path (final /
@@ -646,6 +811,8 @@ class Agent:
         # hold cost_ledger=None, so their usage is not double-recorded here.
         if self.cost_ledger is not None and self._run_scope:
             delta = int(report.usage.get("prompt_tokens", 0)) + int(report.usage.get("completion_tokens", 0))
+            delta += self._run_thinking_tokens  # 沉思轮 token 并入本跑步账
+            self._run_thinking_tokens = 0
             if delta > 0:
                 entry = self.cost_ledger.record(self._run_model, delta, note=f"run {self.name}")
                 self._emit(type="ledger_recorded", model=entry.model, tokens=delta,
@@ -764,6 +931,8 @@ def build_agent(
         extensions=extensions,
         mount_warnings=mount_warnings,
         cost_ledger=ledger,
+        # 三档模式来自配置树（bundle 行 thinking.mode；off/smart/on，默认 off）。
+        thinking=config.get("thinking", "mode", "off"),
     )
 
 
@@ -776,7 +945,9 @@ def mount_contrib_extensions(
     the runtime calls": scheduler drives due-work checks, router shapes task
     dispatch, teams carries subagent messaging, compactor is consulted at the
     loop's compaction threshold, curator runs knowledge metabolism after a
-    run and replay renders the run into a timeline at run end. Every
+    run, replay renders the run into a timeline at run end, and the thinking
+    suite runs contemplation rounds at a run's start/end (capability
+    thinking.mode; four hooks from one module, counted per hook). Every
     consultation is counted on ``Agent.extension_calls``, so "mounted" and
     "actually serving" can never be conflated again. Everything is
     optional-by-name — an absent or quarantined module leaves an empty slot,
@@ -849,10 +1020,73 @@ def mount_contrib_extensions(
         if base_hook is not None:
             slots[module_name] = base_hook
 
+    # thinking.mode（多钩子套件席位）：四钩齐备才挂载；home 模块优先接管。
+    # converged / RoundSpec 直接取模块属性（库/类型面，spec 允许调用方直用）。
+    def _resolve_thinking(registry: ModuleRegistry):
+        module = registry.contributions.get("thinking")
+        if module is None:
+            return None, "not found"
+        if not module.ok:
+            return None, "rejected by the conformance gate"
+        hooks: dict[str, Any] = {}
+        for name in THINKING_HOOKS:
+            fn = module.implementation(name)
+            if callable(fn):
+                hooks[name] = fn
+        if len(hooks) != len(THINKING_HOOKS):
+            missing = ", ".join(n for n in THINKING_HOOKS if n not in hooks)
+            return None, f"missing hooks: {missing}"
+        surface = getattr(module, "module", None)
+        converged_fn = getattr(surface, "converged", None)
+        looks_fn = getattr(surface, "looks_complex", None)
+        suite = ThinkingSuite(
+            module=module.name,
+            should_think=hooks["should_think"],
+            build_thinking_task=hooks["build_thinking_task"],
+            split_thinking=hooks["split_thinking"],
+            estimate_budget=hooks["estimate_budget"],
+            converged=converged_fn if callable(converged_fn) else None,
+            round_spec=getattr(surface, "RoundSpec", None),
+            looks_complex=looks_fn if callable(looks_fn) else None,
+        )
+        return suite, "ok"
+
+    think_suite, think_why = _resolve_thinking(home_registry)
+    if think_suite is not None:
+        slots["thinking"] = think_suite
+        warnings.append(
+            f"contrib seat 'thinking' taken over by home module "
+            f"{home_registry.contributions['thinking'].path}")
+    else:
+        if home_registry.contributions.get("thinking") is not None:
+            warnings.append(
+                f"home contrib 'thinking' cannot serve the suite ({think_why}) — "
+                f"package module keeps serving")
+        pkg_suite, pkg_why = _resolve_thinking(pkg_registry)
+        if pkg_suite is not None:
+            slots["thinking"] = pkg_suite
+        elif pkg_registry.contributions.get("thinking") is not None:
+            warnings.append(
+                f"package contrib 'thinking' passed the gate but exposes no usable "
+                f"suite ({pkg_why}) — seat left empty")
+
+    # BS-2 收口（warning 级）：capability 被广告、但没有任何运行席位在消费的
+    # 模块 → 点名（"只挂在索引里"）。判据从 BS-1 的"解析不了"改为"没人消费"：
+    # 席位名 = 消费人。隔离级升级留给全栈维护师 round-3 裁定（现命中若干存量
+    # 模块，先以警告暴露而非直接拒载）。
+    for label, registry in (("package", pkg_registry), ("home", home_registry)):
+        for name, module in sorted(registry.contributions.items()):
+            if not module.ok or not module.capabilities or name in slots:
+                continue
+            warnings.append(
+                f"{label} contrib '{name}' advertises "
+                f"{', '.join(module.capabilities)} but holds no runtime seat "
+                f"— index-only until wired")
+
     if return_warnings:
         return slots, warnings
     return slots
 
 
-__all__ = ["Agent", "LoopLimits", "RunReport", "Step", "build_agent",
-           "mount_contrib_extensions", "sanitise_child_output"]
+__all__ = ["Agent", "LoopLimits", "RunReport", "Step", "THINKING_HOOKS", "THINKING_MODES",
+           "ThinkingSuite", "build_agent", "mount_contrib_extensions", "sanitise_child_output"]

@@ -16,7 +16,7 @@ import re
 from typing import Any, Dict, List, Optional
 
 MODULE_API_VERSION = 1
-SELFTEST_CASES = 23
+SELFTEST_CASES = 25
 
 
 # ---------------------------------------------------------------------------
@@ -226,12 +226,19 @@ def authorize(
     if not isinstance(tool, str) or not tool:
         return {"decision": "deny", "reason": "empty or non-string tool name"}
 
+    # K3-#1：mode 非字符串（如 int）不得抛 AttributeError——契约“不得抛
+    # 业务异常”，错误输入走保守兑底而非崩溃。
+    if not isinstance(mode, str):
+        mode = "default"
     mode = (mode or "default").strip()
     if mode not in _VALID_MODES:
         # 未知 mode 按保守策略：写入→deny、只读→allow
         mode = "default"
 
-    rules = rules or {}
+    # K3-#2：rules 非 dict（如 truthy list）时 `rules or {}` 防不住，
+    # .get 会抛——非 dict 一律按空规则处理。
+    if not isinstance(rules, dict):
+        rules = {}
     deny_list: List[str] = list(rules.get("deny") or [])
     ask_list: List[str] = list(rules.get("ask") or [])
     allow_list: List[str] = list(rules.get("allow") or [])  # 保留但不影响 deny/ask 的优先级
@@ -533,6 +540,30 @@ def selftest() -> List[tuple[str, bool, str]]:
         _ok("hooks surface has no contract-external dead hooks")
     else:
         _bad("hooks surface has no contract-external dead hooks", f"{sorted(hooks)}")
+
+    # 24. K3-#1：mode 非字符串不崩（契约“不得抛业务异常”）
+    try:
+        d = authorize("read_file", 123, {}, None, ws)
+        ok24 = d.get("decision") in ("allow", "ask", "deny")
+        detail24 = str(d)
+    except Exception as exc:  # noqa: BLE001
+        ok24, detail24 = False, f"raised {type(exc).__name__}: {exc}"
+    if ok24:
+        _ok("authorize(mode=123) 不抛异常")
+    else:
+        _bad("authorize(mode=123) 不抛异常", detail24)
+
+    # 25. K3-#2：rules 传 truthy list 不崩（`rules or {}` 防不住）
+    try:
+        d = authorize("read_file", "default", ["deny-x"], None, ws)
+        ok25 = d.get("decision") in ("allow", "ask", "deny")
+        detail25 = str(d)
+    except Exception as exc:  # noqa: BLE001
+        ok25, detail25 = False, f"raised {type(exc).__name__}: {exc}"
+    if ok25:
+        _ok("authorize(rules=list) 不抛异常")
+    else:
+        _bad("authorize(rules=list) 不抛异常", detail25)
 
     return results
 

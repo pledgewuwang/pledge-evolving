@@ -34,6 +34,14 @@
     }
   },
   {
+    "id": "thinking",
+    "name": "thinking:mode",
+    "config": {
+      "mode": "off",
+      "notes": "三档沉思模式（capability thinking.mode）：off=默认不开启 / smart=按任务复杂度智能选择（触发词或长文本，消费库函数 looks_complex）/ on=默认开启。启用后运行首尾消费 should_think/estimate_budget/build_thinking_task/split_thinking/converged。"
+    }
+  },
+  {
     "id": "deepseek",
     "name": "provider:deepseek",
     "config": {

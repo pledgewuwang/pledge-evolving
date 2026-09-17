@@ -1,0 +1,27 @@
+{
+  "id": "cand-e50721fa3d",
+  "kind": "note",
+  "target": "evolution\\note-20260917.md",
+  "content": "- [pitfall] {\"round\": 91, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 21.0}, \"verdicts\": [\"**把真模型端到端冒烟纳入闸门，失败即阻断并落 trace。**\\n\\n理由：439 全绿 + healthy 11/11 说明自检只覆盖桩件与静",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 91, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 21.0}, \"verdicts\": [\"**把真模型端到端冒烟纳入闸门，失败即阻断并落 trace。**\\n\\n理由：439 全绿 + healthy 11/11 说明自检只覆盖桩件与静",
+      "session_id": "iteration-r91",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789626145.8883939
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789626145.88855,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

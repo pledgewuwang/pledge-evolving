@@ -1,0 +1,27 @@
+{
+  "id": "cand-a0b73dc896",
+  "kind": "note",
+  "target": "evolution\\note-20260917.md",
+  "content": "- [pitfall] {\"round\": 95, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并以 Markdown 无序列表写入 `outputs/summary.md`，每条一行、内容均取自原文：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点\", \"seconds\": 8.1}, \"verdicts\": [\"**把真模型端到端冒烟固化为 CI 常驻关卡（含失败即阻断）。**\\n\\n理由：439 项自检全绿只证明骨架自洽，隔离为空更说明无外部契约在压它——这是典型的\\\"绿灯幻觉\\\"。五项判分冒烟是唯一能暴露读",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 95, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并以 Markdown 无序列表写入 `outputs/summary.md`，每条一行、内容均取自原文：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点\", \"seconds\": 8.1}, \"verdicts\": [\"**把真模型端到端冒烟固化为 CI 常驻关卡（含失败即阻断）。**\\n\\n理由：439 项自检全绿只证明骨架自洽，隔离为空更说明无外部契约在压它——这是典型的\\\"绿灯幻觉\\\"。五项判分冒烟是唯一能暴露读",
+      "session_id": "iteration-r95",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789633335.8816345
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789633335.8817666,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

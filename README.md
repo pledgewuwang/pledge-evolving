@@ -72,6 +72,22 @@ v4 交付后进入修复轮：每一轮都由独立复验席自写探针攻击�
 4. **router/teams 主键冻结（F2-3）**：worker/member 以 `id` 为主键（同一键空间），`name` 只作显示与排序；集成自检改反值构造（id ≠ name），同值掩盖从此翻红。
 5. **validate 警告行（F5-4）+ 正则清理（F5-5）**：`modules validate` 就地打印 `[warn]` 行；evolution 信号正则清除生成期串味残留。
 
+## v0.7.0：三档模型智能路由
+
+新增 `forge/routing.py`（SmartRouter，ModelRouter 子类，冻结契约零改动）。任务级选档，三种策略：
+
+| 策略 | 路由逻辑 |
+| --- | --- |
+| `economy` | 按有效单价升序走档（pricing.py 账单反推价），仅可重试失败才上浮；未知价保守殿后，不被当免费档打穿 |
+| `balanced` | 中端主力档首发，失败向上升级 + 冻结 chain 兑底（默认） |
+| `premium` | 两阶段流水：中端出草稿 → 高端集成裁决；集成段任何失败（含 fatal）都降级回草稿——草稿已付费不弃；消息形状严格角色交替（system/user/assistant/user），集成档只收原任务+草稿，完整对话不外流 |
+
+```bash
+python run.py run "任务" --strategy economy      # CLI 显式指定（> 配置 > 默认 balanced）
+```
+
+配置在 `bundles/base.json` 的 `model.routing` 块：`tiers`（档位表，按成本序声明）、`premium`（集成裁决档）、`small`（杂务档，失败不上浮烧不到审查档）。计价表未知价=0.0 的单一权威定义见 `pricing.py` 顶部注释（routing 取保守解释、预算缩放取宽松解释，有意不同）。
+
 ## 快速开始
 
 ```bash
@@ -155,5 +171,6 @@ agent-forge/
 - `capability.install` 只做版本化目录落盘，没有签名校验；供应链审计需要外接 OSV 之类的源。
 - 记忆检索是精确匹配 + 时间/置顶排序，没有向量召回 —— 接向量库是明确的下一步。
 - `read_only` 是声明而非强制——写工具标 `read_only=True` 会绕过沙箱路径校验与 read-only 模式写门（WB-P2 authorize 声明信任缺口；当前 toolhost 未被运行时挂载，影响有限）。
+- premium 两阶段会把**草稿与原始任务**发送给集成裁决档（知情使用：配置了 premium 档即同意该数据面）；完整对话历史不会外流。
 - `mount_contrib_extensions` 的双注册表保底覆盖静态闸和钩子可解析性；运行期钩子异常的保底由 `_use_extension` 的异常捕获兜底（不回退到包内模块）——需要「坏钩子不抢位」的场景应改为运行期降级重试（复杂，登记非挂账）。
 - `teams.deliver` 的 `to` 方向只做 id 寻址（无 name→id 解析），`from` 方向支持 name 唯一归属解析——非对称设计，安全但需注意：`to` 不可用显示名。

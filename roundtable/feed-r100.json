@@ -1,0 +1,11 @@
+{
+  "round": 100,
+  "written_at": 1789653639.3451016,
+  "for": [
+    "MiMo席（stepclaw 中转）",
+    "DeepSeek席（a2a 直发同步进行）"
+  ],
+  "instruction": "三席第一轮审查：thinking.py Trae 初稿。材料包 review-kit-thinking-01（draft\\thinking.py 待审件；三席审查征询-thinking初稿.md 问题单与我方席发现；evidence\\ 两份复跑证据）。请按问题单第三节回：1) 你方独立发现（P0/P1/P2 + 可复跑证据）；2) 对 P0-1 钩子命名规范冲突的裁决（thinking.* 点路径 vs HOOK_ALIASES 扩容；warn 是否升硬门）；3) 一条盲点。回复追加 roundtable/replies.md 或写 review-kit-thinking-01\\replies-mimo.md。注意：rev.3 草案三处待用户拍板项（0.92 阈值/PHASES 枚举/evolution 接口）按待澄清标注，不入缺陷。",
+  "subject": "forge/contrib/thinking.py 初稿三席联审（Trae 产出）",
+  "review_verdicts": []
+}
