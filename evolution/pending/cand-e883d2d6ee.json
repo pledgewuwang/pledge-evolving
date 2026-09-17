@@ -1,0 +1,35 @@
+{
+  "id": "cand-e883d2d6ee",
+  "kind": "skill",
+  "target": "evolution\\skill-20260915.md",
+  "content": "- [workflow] {\"round\": 27, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（内容为项目笔记，含本季度完成事项、遗留问题、下季度重点三段），并据此提炼三条要点写入 `outputs/summary.md`，为 Markdown 无序列表、每条一行，文字均取自原文，未经改写或增补。已回读文件确认写入内容无误。\", \"seconds\": 20.7}, \"verdicts\": [\"把真模型端到端冒烟固化为闸门必跑项，并落五项判分基线快照。\\n\\n理由：254 项检查与 healthy 均为静态/单元级，冒烟靠\\\"另跑\\\"，接口一改回归无人拦。绿灯零隔离说明瓶颈已不是修错，而是防退化，这条真实链路断言收益最高。\", \"*\n- [pitfall] {\"round\": 27, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（内容为项目笔记，含本季度完成事项、遗留问题、下季度重点三段），并据此提炼三条要点写入 `outputs/summary.md`，为 Markdown 无序列表、每条一行，文字均取自原文，未经改写或增补。已回读文件确认写入内容无误。\", \"seconds\": 20.7}, \"verdicts\": [\"把真模型端到端冒烟固化为闸门必跑项，并落五项判分基线快照。\\n\\n理由：254 项检查与 healthy 均为静态/单元级，冒烟靠\\\"另跑\\\"，接口一改回归无人拦。绿灯零隔离说明瓶颈已不是修错，而是防退化，这条真实链路断言收益最高。\", \"*",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 27, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（内容为项目笔记，含本季度完成事项、遗留问题、下季度重点三段），并据此提炼三条要点写入 `outputs/summary.md`，为 Markdown 无序列表、每条一行，文字均取自原文，未经改写或增补。已回读文件确认写入内容无误。\", \"seconds\": 20.7}, \"verdicts\": [\"把真模型端到端冒烟固化为闸门必跑项，并落五项判分基线快照。\\n\\n理由：254 项检查与 healthy 均为静态/单元级，冒烟靠\\\"另跑\\\"，接口一改回归无人拦。绿灯零隔离说明瓶颈已不是修错，而是防退化，这条真实链路断言收益最高。\", \"*",
+      "session_id": "iteration-r27",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789455125.2417443
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 27, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（内容为项目笔记，含本季度完成事项、遗留问题、下季度重点三段），并据此提炼三条要点写入 `outputs/summary.md`，为 Markdown 无序列表、每条一行，文字均取自原文，未经改写或增补。已回读文件确认写入内容无误。\", \"seconds\": 20.7}, \"verdicts\": [\"把真模型端到端冒烟固化为闸门必跑项，并落五项判分基线快照。\\n\\n理由：254 项检查与 healthy 均为静态/单元级，冒烟靠\\\"另跑\\\"，接口一改回归无人拦。绿灯零隔离说明瓶颈已不是修错，而是防退化，这条真实链路断言收益最高。\", \"*",
+      "session_id": "iteration-r27",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789455125.2419045
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789455125.2421231,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

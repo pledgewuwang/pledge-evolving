@@ -1,0 +1,27 @@
+{
+  "id": "cand-c7daeab44e",
+  "kind": "note",
+  "target": "evolution\\note-20260915.md",
+  "content": "- [pitfall] {\"round\": 34, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并把原文中的三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容逐字取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季\", \"seconds\": 13.0}, \"verdicts\": [\"**建议：把这次真模型端到端冒烟固化为 CI 必跑回归项（真模型件可降级为 mock），并锁定五项判分的基线快照。**\\n\\n理由：254 项自检覆盖的是结构断言，接口真实连通性只有这一次人工冒烟验证",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 34, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并把原文中的三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容逐字取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季\", \"seconds\": 13.0}, \"verdicts\": [\"**建议：把这次真模型端到端冒烟固化为 CI 必跑回归项（真模型件可降级为 mock），并锁定五项判分的基线快照。**\\n\\n理由：254 项自检覆盖的是结构断言，接口真实连通性只有这一次人工冒烟验证",
+      "session_id": "iteration-r34",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789467742.478509
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789467742.4786453,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

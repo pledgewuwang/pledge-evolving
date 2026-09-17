@@ -1,0 +1,35 @@
+{
+  "id": "cand-badb90a638",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 57, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把\", \"seconds\": 8.2}, \"verdicts\": [\"**立刻做：把模块公开接口固化为契约测试**（导出签名 + 数据 schema 快照），纳入 CI 强制。\\n\\n理由：360 全绿只证明\\\"当下自洽\\\"，不锁边界。隔离模块为空，说明耦合风险尚未被压测\n- [success] {\"round\": 57, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把\", \"seconds\": 8.2}, \"verdicts\": [\"**立刻做：把模块公开接口固化为契约测试**（导出签名 + 数据 schema 快照），纳入 CI 强制。\\n\\n理由：360 全绿只证明\\\"当下自洽\\\"，不锁边界。隔离模块为空，说明耦合风险尚未被压测",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 57, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把\", \"seconds\": 8.2}, \"verdicts\": [\"**立刻做：把模块公开接口固化为契约测试**（导出签名 + 数据 schema 快照），纳入 CI 强制。\\n\\n理由：360 全绿只证明\\\"当下自洽\\\"，不锁边界。隔离模块为空，说明耦合风险尚未被压测",
+      "session_id": "iteration-r57",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789548718.287095
+    },
+    {
+      "kind": "success",
+      "text": "{\"round\": 57, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把\", \"seconds\": 8.2}, \"verdicts\": [\"**立刻做：把模块公开接口固化为契约测试**（导出签名 + 数据 schema 快照），纳入 CI 强制。\\n\\n理由：360 全绿只证明\\\"当下自洽\\\"，不锁边界。隔离模块为空，说明耦合风险尚未被压测",
+      "session_id": "iteration-r57",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789548718.2871974
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789548718.2872572,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

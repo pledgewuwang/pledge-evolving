@@ -1,0 +1,27 @@
+{
+  "id": "cand-cc5318429c",
+  "kind": "note",
+  "target": "evolution\\note-20260915.md",
+  "content": "- [pitfall] {\"round\": 42, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n我读取了 `inputs/notes.md`（原文共三段：季度成果、遗留问题、下季度重点），据此提炼三条要点写入 `outputs/summary.md`，均为 Markdown 无序列表、每条一行、措辞完全取自原文，并已回读校验通过：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗\", \"seconds\": 23.1}, \"verdicts\": [\"把真模型端到端冒烟的\\\"五项判分\\\"固化为契约测试（金标准断言 + 快照），纳入现有闸门。\\n\\n理由：254/254 全绿只证明骨架自洽，真模型验证目前是一次性人工结论，无回归基线。接口语义一旦漂移，",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 42, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n我读取了 `inputs/notes.md`（原文共三段：季度成果、遗留问题、下季度重点），据此提炼三条要点写入 `outputs/summary.md`，均为 Markdown 无序列表、每条一行、措辞完全取自原文，并已回读校验通过：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗\", \"seconds\": 23.1}, \"verdicts\": [\"把真模型端到端冒烟的\\\"五项判分\\\"固化为契约测试（金标准断言 + 快照），纳入现有闸门。\\n\\n理由：254/254 全绿只证明骨架自洽，真模型验证目前是一次性人工结论，无回归基线。接口语义一旦漂移，",
+      "session_id": "iteration-r42",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789482123.9446495
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789482123.9448059,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

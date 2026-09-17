@@ -1,0 +1,27 @@
+{
+  "id": "cand-4e6447b27b",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 58, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点（本季度三项完成事项、遗留的自检证据问题、下季度重点）以 Markdown 无序列表写入 `outputs/summary.md`，内容均直接取自原文。\", \"seconds\": 6.3}, \"verdicts\": [\"**最该做：把模块间接口抽成显式 contract 层（schema + 版本号 + 契约测试），别只靠闸门隐式兜。**\\n\\n理由：现在 360 项查的是实现行为，不是接口本身。无版本契约时，任一模块改动签名只能靠全量回归兜住，代价随模块数线\", \"引入独立审计测试（非原作者执行），因其能暴露测试设计盲点，",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 58, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点（本季度三项完成事项、遗留的自检证据问题、下季度重点）以 Markdown 无序列表写入 `outputs/summary.md`，内容均直接取自原文。\", \"seconds\": 6.3}, \"verdicts\": [\"**最该做：把模块间接口抽成显式 contract 层（schema + 版本号 + 契约测试），别只靠闸门隐式兜。**\\n\\n理由：现在 360 项查的是实现行为，不是接口本身。无版本契约时，任一模块改动签名只能靠全量回归兜住，代价随模块数线\", \"引入独立审计测试（非原作者执行），因其能暴露测试设计盲点，",
+      "session_id": "iteration-r58",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789550518.619133
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789550518.6192715,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

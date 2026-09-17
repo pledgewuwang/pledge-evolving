@@ -1,0 +1,27 @@
+{
+  "id": "cand-bf3d42caa6",
+  "kind": "note",
+  "target": "evolution\\note-20260915.md",
+  "content": "- [pitfall] {\"round\": 37, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md` 并提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容逐字来自原文），已回读确认落盘内容与原文一致：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已\", \"seconds\": 18.8}, \"verdicts\": [\"**立刻做：把模块接口固化为契约基线（schema + 版本号 + 快照测试），纳入闸门。**\\n\\n理由：254/254 全绿、零隔离，说明当前风险不在功能而在**回归**。现有闸门只判\\\"通过/不通",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 37, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md` 并提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容逐字来自原文），已回读确认落盘内容与原文一致：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已\", \"seconds\": 18.8}, \"verdicts\": [\"**立刻做：把模块接口固化为契约基线（schema + 版本号 + 快照测试），纳入闸门。**\\n\\n理由：254/254 全绿、零隔离，说明当前风险不在功能而在**回归**。现有闸门只判\\\"通过/不通",
+      "session_id": "iteration-r37",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789473119.496999
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789473119.4971623,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

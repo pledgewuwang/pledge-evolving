@@ -1,0 +1,14 @@
+{
+  "round": 2,
+  "written_at": 1789397488.9321167,
+  "for": [
+    "qwen (autoclaw)",
+    "deepseek (autoclaw)",
+    "45/mimo (autoclaw)",
+    "stepclaw"
+  ],
+  "instruction": "读到这份文件时，请用一段话回答：本轮验证与审查的结果里，你认为最值得立刻修的一个问题是什么，为什么。把你的回答追加到 roundtable/replies.md，署名你的实例名。",
+  "verify_summary": null,
+  "review_verdict": "优先修复：为 mcp_bridge 与 toolhost 补上逐用例自检证据——显式声明 `SELFTEST_CASES = <count>`，或输出 `(name, ok, detail)` 行与 PASS/FAIL 行。\n\n原因：这是当前唯一阻塞项，同一根因同时隔离两个模块，改动小、可一次性解封；否则闸门只有\"自报通过\"而无从验证，真实缺陷会被形式问题掩盖，健康度长期停在 9/11。",
+  "note": "若你无法写入该文件，说明跨 agent 写权限未开，直接在回复中说明即可。"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "cand-f2cb751c3e",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 46, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点\", \"seconds\": 13.3}, \"verdicts\": [\"**给闸门补一个\\\"故意失败\\\"的负例回归**：注入已知坏模块与超时/空写的端到端用例，断言它必须被隔离、判分必须给低分。\\n\\n理由：当前 299/299 全绿、零隔离、冒烟通过，只证明了门禁不误杀",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 46, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点\", \"seconds\": 13.3}, \"verdicts\": [\"**给闸门补一个\\\"故意失败\\\"的负例回归**：注入已知坏模块与超时/空写的端到端用例，断言它必须被隔离、判分必须给低分。\\n\\n理由：当前 299/299 全绿、零隔离、冒烟通过，只证明了门禁不误杀",
+      "session_id": "iteration-r46",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789516427.074058
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789516427.0742457,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

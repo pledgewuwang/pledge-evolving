@@ -1,0 +1,27 @@
+{
+  "id": "cand-da8eca1597",
+  "kind": "note",
+  "target": "evolution\\note-20260915.md",
+  "content": "- [pitfall] {\"round\": 25, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，其中含三条核心信息（本季度成果、遗留问题、下季度重点），我按原文各取一条，写成 Markdown 无序列表落到 `outputs/summary.md`（99 字节），并回读校验内容一致、每条一行、逐字来自原文，未做任何改写或增补。\", \"seconds\": 26.9}, \"verdicts\": [\"**把这次真模型端到端冒烟固化为可重放契约用例（固定输入 + 五项判分期望），纳入常规闸门。**\\n\\n理由：253 项自检多为实现级断言，与代码同源，接口漂移时常同改同过、集体失效；真正验证\\\"读→写→判分\\\"契约的只有端到端链路。一次性",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 25, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，其中含三条核心信息（本季度成果、遗留问题、下季度重点），我按原文各取一条，写成 Markdown 无序列表落到 `outputs/summary.md`（99 字节），并回读校验内容一致、每条一行、逐字来自原文，未做任何改写或增补。\", \"seconds\": 26.9}, \"verdicts\": [\"**把这次真模型端到端冒烟固化为可重放契约用例（固定输入 + 五项判分期望），纳入常规闸门。**\\n\\n理由：253 项自检多为实现级断言，与代码同源，接口漂移时常同改同过、集体失效；真正验证\\\"读→写→判分\\\"契约的只有端到端链路。一次性",
+      "session_id": "iteration-r25",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789451528.4556823
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789451528.4558764,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

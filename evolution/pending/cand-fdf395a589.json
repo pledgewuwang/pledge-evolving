@@ -1,0 +1,27 @@
+{
+  "id": "cand-fdf395a589",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 63, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并把原文的三条要点写入 outputs/summary.md（Markdown 无序列表，每条一行）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布\", \"seconds\": 7.5}, \"verdicts\": [\"**立刻做：把本轮 371 项结果固化为契约基线（接口冻结清单 + 快照回归门禁）。**\\n\\n理由：全绿意味着当前\\\"无信号可依\\\"，改接口时没有护栏，隔离空更说明故障会被静默传播。真模型冒烟贵且不稳",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 63, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并把原文的三条要点写入 outputs/summary.md（Markdown 无序列表，每条一行）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布\", \"seconds\": 7.5}, \"verdicts\": [\"**立刻做：把本轮 371 项结果固化为契约基线（接口冻结清单 + 快照回归门禁）。**\\n\\n理由：全绿意味着当前\\\"无信号可依\\\"，改接口时没有护栏，隔离空更说明故障会被静默传播。真模型冒烟贵且不稳",
+      "session_id": "iteration-r63",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789554202.8044336
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789554202.8045988,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

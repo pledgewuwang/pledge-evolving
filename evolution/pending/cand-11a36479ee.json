@@ -1,0 +1,27 @@
+{
+  "id": "cand-11a36479ee",
+  "kind": "note",
+  "target": "evolution\\note-20260915.md",
+  "content": "- [pitfall] {\"round\": 40, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"Done。\\n\\n我从 `inputs/notes.md` 原文提炼了三条要点，以 Markdown 无序列表写入 `outputs/summary.md`（每条一行，逐字取自原文，未做改写）：本季度完成的三件事、遗留问题（两个模块被隔离并回传作者修法）、下季度重点（三席位评审接入发布门禁、跑通 15 个真实任务闭环）。已\", \"seconds\": 21.8}, \"verdicts\": [\"最值得立刻做：把真模型冒烟（读→写→五项判分）固化为每次提交的 CI 门禁，并补一条负例（故意坏输出须判失败）。\\n\\n理由：254 项自检多为自造自测，无法证明与真模型耦合处的回归防护；当前\\\"通过\\\"仅一",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 40, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"Done。\\n\\n我从 `inputs/notes.md` 原文提炼了三条要点，以 Markdown 无序列表写入 `outputs/summary.md`（每条一行，逐字取自原文，未做改写）：本季度完成的三件事、遗留问题（两个模块被隔离并回传作者修法）、下季度重点（三席位评审接入发布门禁、跑通 15 个真实任务闭环）。已\", \"seconds\": 21.8}, \"verdicts\": [\"最值得立刻做：把真模型冒烟（读→写→五项判分）固化为每次提交的 CI 门禁，并补一条负例（故意坏输出须判失败）。\\n\\n理由：254 项自检多为自造自测，无法证明与真模型耦合处的回归防护；当前\\\"通过\\\"仅一",
+      "session_id": "iteration-r40",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789478519.6675942
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789478519.667756,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

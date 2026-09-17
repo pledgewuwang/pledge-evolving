@@ -1,0 +1,27 @@
+{
+  "id": "cand-547070f0b3",
+  "kind": "note",
+  "target": "evolution\\note-20260917.md",
+  "content": "- [pitfall] {\"round\": 84, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每行一条，均取自原文）：本季度完成的三件事、遗留问题（两模块被隔离并回传作者修法）、下季度重点（三席位评审接入发布门禁并跑通 15 个真实任务闭环）。\", \"seconds\": 8.7}, \"verdicts\": [\"**把「全量自检 + 真模型冒烟」固化为合并前必过的 CI 门禁，并给贡献模块接口加契约测试。**\\n\\n理由：此刻 439/439 全绿、隔离为空，说明骨架已稳，但绿是\\\"跑出来的\\\"而非\\\"锁住的\\\"。若无回归护栏，下一次接口改动只",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 84, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每行一条，均取自原文）：本季度完成的三件事、遗留问题（两模块被隔离并回传作者修法）、下季度重点（三席位评审接入发布门禁并跑通 15 个真实任务闭环）。\", \"seconds\": 8.7}, \"verdicts\": [\"**把「全量自检 + 真模型冒烟」固化为合并前必过的 CI 门禁，并给贡献模块接口加契约测试。**\\n\\n理由：此刻 439/439 全绿、隔离为空，说明骨架已稳，但绿是\\\"跑出来的\\\"而非\\\"锁住的\\\"。若无回归护栏，下一次接口改动只",
+      "session_id": "iteration-r84",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789613534.6346955
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789613534.634852,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "forge-agent-framework"
+version = "0.7.0"
+description = "A unified agent framework assembled from contributions written by other agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+keywords = ["agent", "framework", "orchestration", "self-iteration"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Operating System :: OS Independent",
+]
+
+[project.scripts]
+forge = "forge.cli:main"
+
+[project.urls]
+Documentation = "https://example.invalid/forge"
+
+[tool.setuptools]
+packages = ["forge"]
+
+[tool.setuptools.package-data]
+forge = ["contrib/*.py", "contrib/*.md", "contrib/*.json",
+         "bundles/*.json", "templates/*.py", "templates/*.json"]

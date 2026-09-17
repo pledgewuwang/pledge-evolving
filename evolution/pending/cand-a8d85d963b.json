@@ -1,0 +1,35 @@
+{
+  "id": "cand-a8d85d963b",
+  "kind": "skill",
+  "target": "evolution\\skill-20260915.md",
+  "content": "- [workflow] {\"round\": 29, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（原文三段内容：本季度完成的三件事、遗留问题、下季度重点），并将其提炼为三条要点写入 `outputs/summary.md`，采用 Markdown 无序列表，每条一行，措辞均直接取自原文。\", \"seconds\": 11.1}, \"verdicts\": [\"**给闸门加负向注入测试**：故意提交坏模块，断言 isolated 非空、判分失败、退出码非零。\\n\\n理由：`isolated=[]` 说明拦截路径从未被真实触发过，254 全绿只证明正向通行，未证明\\\"拦得住\\\"；而真模型冒烟不可重放、进不了\", \"最值得立刻做的改进：引入第\n- [pitfall] {\"round\": 29, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（原文三段内容：本季度完成的三件事、遗留问题、下季度重点），并将其提炼为三条要点写入 `outputs/summary.md`，采用 Markdown 无序列表，每条一行，措辞均直接取自原文。\", \"seconds\": 11.1}, \"verdicts\": [\"**给闸门加负向注入测试**：故意提交坏模块，断言 isolated 非空、判分失败、退出码非零。\\n\\n理由：`isolated=[]` 说明拦截路径从未被真实触发过，254 全绿只证明正向通行，未证明\\\"拦得住\\\"；而真模型冒烟不可重放、进不了\", \"最值得立刻做的改进：引入第",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 29, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（原文三段内容：本季度完成的三件事、遗留问题、下季度重点），并将其提炼为三条要点写入 `outputs/summary.md`，采用 Markdown 无序列表，每条一行，措辞均直接取自原文。\", \"seconds\": 11.1}, \"verdicts\": [\"**给闸门加负向注入测试**：故意提交坏模块，断言 isolated 非空、判分失败、退出码非零。\\n\\n理由：`isolated=[]` 说明拦截路径从未被真实触发过，254 全绿只证明正向通行，未证明\\\"拦得住\\\"；而真模型冒烟不可重放、进不了\", \"最值得立刻做的改进：引入第",
+      "session_id": "iteration-r29",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789458716.0095172
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 29, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（原文三段内容：本季度完成的三件事、遗留问题、下季度重点），并将其提炼为三条要点写入 `outputs/summary.md`，采用 Markdown 无序列表，每条一行，措辞均直接取自原文。\", \"seconds\": 11.1}, \"verdicts\": [\"**给闸门加负向注入测试**：故意提交坏模块，断言 isolated 非空、判分失败、退出码非零。\\n\\n理由：`isolated=[]` 说明拦截路径从未被真实触发过，254 全绿只证明正向通行，未证明\\\"拦得住\\\"；而真模型冒烟不可重放、进不了\", \"最值得立刻做的改进：引入第",
+      "session_id": "iteration-r29",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789458716.0096245
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789458716.009791,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

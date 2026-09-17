@@ -1,0 +1,27 @@
+{
+  "id": "cand-56a859c682",
+  "kind": "memory",
+  "target": "evolution\\memory-20260916.md",
+  "content": "- [correction] {\"round\": 59, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文，已回读校验）。\", \"seconds\": 13.4}, \"verdicts\": [\"最该做：把公共接口固化为可执行契约（JSON Schema + 快照/契约测试），纳入 CI 闸门。\\n\\n理由：全绿说明风险已从\\\"功能对不对\\\"转向\\\"回归与接口漂移\\\"。目前只靠端到端冒烟，粒度过粗——接口被悄悄改坏时，冒烟仍可能通过，且定位困难\", \"现有自检与冒烟测试均为框架自执行，可能自验证盲点，如边界条件或异常场景缺失独立验证。",
+  "signals": [
+    {
+      "kind": "correction",
+      "text": "{\"round\": 59, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文，已回读校验）。\", \"seconds\": 13.4}, \"verdicts\": [\"最该做：把公共接口固化为可执行契约（JSON Schema + 快照/契约测试），纳入 CI 闸门。\\n\\n理由：全绿说明风险已从\\\"功能对不对\\\"转向\\\"回归与接口漂移\\\"。目前只靠端到端冒烟，粒度过粗——接口被悄悄改坏时，冒烟仍可能通过，且定位困难\", \"现有自检与冒烟测试均为框架自执行，可能自验证盲点，如边界条件或异常场景缺失独立验证。",
+      "session_id": "iteration-r59",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789550855.3439524
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789550855.344388,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

@@ -1,0 +1,35 @@
+{
+  "id": "cand-ec3e26673e",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 53, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并把其中三条要点（本季度完成事项、遗留问题、下季度重点）逐条写入 outputs/summary.md。\", \"seconds\": 17.1}, \"verdicts\": [\"**结论：把真模型端到端冒烟固化为 CI 门禁里的接口契约测试**（五项判分断言版本化、可重放）。\\n\\n理由：现在 352 checks 与冒烟是两套——自检全绿只证明内部一致，真实链路靠人工跑。骨架/接口一旦改动，可能出现\\\"352 全绿但链\", \"最值得立刻做的改进是：**引入与测试框架解耦的独立验证工具（如静态分析器或第三方审计脚本）来抽查自检结果**。\\n\\n\n- [success] {\"round\": 53, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并把其中三条要点（本季度完成事项、遗留问题、下季度重点）逐条写入 outputs/summary.md。\", \"seconds\": 17.1}, \"verdicts\": [\"**结论：把真模型端到端冒烟固化为 CI 门禁里的接口契约测试**（五项判分断言版本化、可重放）。\\n\\n理由：现在 352 checks 与冒烟是两套——自检全绿只证明内部一致，真实链路靠人工跑。骨架/接口一旦改动，可能出现\\\"352 全绿但链\", \"最值得立刻做的改进是：**引入与测试框架解耦的独立验证工具（如静态分析器或第三方审计脚本）来抽查自检结果**。\\n\\n",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 53, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并把其中三条要点（本季度完成事项、遗留问题、下季度重点）逐条写入 outputs/summary.md。\", \"seconds\": 17.1}, \"verdicts\": [\"**结论：把真模型端到端冒烟固化为 CI 门禁里的接口契约测试**（五项判分断言版本化、可重放）。\\n\\n理由：现在 352 checks 与冒烟是两套——自检全绿只证明内部一致，真实链路靠人工跑。骨架/接口一旦改动，可能出现\\\"352 全绿但链\", \"最值得立刻做的改进是：**引入与测试框架解耦的独立验证工具（如静态分析器或第三方审计脚本）来抽查自检结果**。\\n\\n",
+      "session_id": "iteration-r53",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789538060.1929986
+    },
+    {
+      "kind": "success",
+      "text": "{\"round\": 53, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并把其中三条要点（本季度完成事项、遗留问题、下季度重点）逐条写入 outputs/summary.md。\", \"seconds\": 17.1}, \"verdicts\": [\"**结论：把真模型端到端冒烟固化为 CI 门禁里的接口契约测试**（五项判分断言版本化、可重放）。\\n\\n理由：现在 352 checks 与冒烟是两套——自检全绿只证明内部一致，真实链路靠人工跑。骨架/接口一旦改动，可能出现\\\"352 全绿但链\", \"最值得立刻做的改进是：**引入与测试框架解耦的独立验证工具（如静态分析器或第三方审计脚本）来抽查自检结果**。\\n\\n",
+      "session_id": "iteration-r53",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789538060.1930912
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789538060.193148,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

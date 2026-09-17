@@ -1,0 +1,35 @@
+{
+  "id": "cand-15a77914c8",
+  "kind": "skill",
+  "target": "evolution\\skill-20260916.md",
+  "content": "- [workflow] {\"round\": 70, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，将其中三条要点（本季度完成事项、遗留问题、下季度重点）逐条原样写入 outputs/summary.md，采用 Markdown 无序列表，每条一行。\", \"seconds\": 35.1}, \"verdicts\": [\"**立刻把端到端冒烟的输入输出固化为契约测试（golden case）并纳入闸门，同时给核心接口打版本号。**\\n\\n理由：413 项全绿、0 隔离，说明测试与实现同源——重构时无法证明接口兼容。骨架真正的风险不在当前行为，而在下次改动时的隐式\", \"最值得立刻做的是：**对核心“自检/闸门”代码本身，引入外部或异构的独立验\n- [pitfall] {\"round\": 70, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，将其中三条要点（本季度完成事项、遗留问题、下季度重点）逐条原样写入 outputs/summary.md，采用 Markdown 无序列表，每条一行。\", \"seconds\": 35.1}, \"verdicts\": [\"**立刻把端到端冒烟的输入输出固化为契约测试（golden case）并纳入闸门，同时给核心接口打版本号。**\\n\\n理由：413 项全绿、0 隔离，说明测试与实现同源——重构时无法证明接口兼容。骨架真正的风险不在当前行为，而在下次改动时的隐式\", \"最值得立刻做的是：**对核心“自检/闸门”代码本身，引入外部或异构的独立验",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 70, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，将其中三条要点（本季度完成事项、遗留问题、下季度重点）逐条原样写入 outputs/summary.md，采用 Markdown 无序列表，每条一行。\", \"seconds\": 35.1}, \"verdicts\": [\"**立刻把端到端冒烟的输入输出固化为契约测试（golden case）并纳入闸门，同时给核心接口打版本号。**\\n\\n理由：413 项全绿、0 隔离，说明测试与实现同源——重构时无法证明接口兼容。骨架真正的风险不在当前行为，而在下次改动时的隐式\", \"最值得立刻做的是：**对核心“自检/闸门”代码本身，引入外部或异构的独立验",
+      "session_id": "iteration-r70",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789564963.9345205
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 70, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，将其中三条要点（本季度完成事项、遗留问题、下季度重点）逐条原样写入 outputs/summary.md，采用 Markdown 无序列表，每条一行。\", \"seconds\": 35.1}, \"verdicts\": [\"**立刻把端到端冒烟的输入输出固化为契约测试（golden case）并纳入闸门，同时给核心接口打版本号。**\\n\\n理由：413 项全绿、0 隔离，说明测试与实现同源——重构时无法证明接口兼容。骨架真正的风险不在当前行为，而在下次改动时的隐式\", \"最值得立刻做的是：**对核心“自检/闸门”代码本身，引入外部或异构的独立验",
+      "session_id": "iteration-r70",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789564963.9346397
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789564963.9348366,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

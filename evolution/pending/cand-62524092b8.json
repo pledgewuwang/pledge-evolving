@@ -1,0 +1,27 @@
+{
+  "id": "cand-62524092b8",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 66, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，将三条要点（本季度完成事项、遗留问题、下季度重点）逐行写入 `outputs/summary.md`，内容均直接取自原文。\", \"seconds\": 15.5}, \"verdicts\": [\"建议把「真模型端到端冒烟」从手动跑升级为 CI 常驻闸门，并落盘五项判分的 golden 快照与接口契约。\\n\\n理由：当前全绿但依赖人工验证，骨架和接口缺少回归护栏；模型输出有非确定性，一旦悄悄漂移，391 项自检可能仍全过而端到端已坏。契约\", \"最值得立刻做的改进是引入外部独立测试（如第三方审计或开源社区验证）。理由：自检通过可能掩盖内部盲点",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 66, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，将三条要点（本季度完成事项、遗留问题、下季度重点）逐行写入 `outputs/summary.md`，内容均直接取自原文。\", \"seconds\": 15.5}, \"verdicts\": [\"建议把「真模型端到端冒烟」从手动跑升级为 CI 常驻闸门，并落盘五项判分的 golden 快照与接口契约。\\n\\n理由：当前全绿但依赖人工验证，骨架和接口缺少回归护栏；模型输出有非确定性，一旦悄悄漂移，391 项自检可能仍全过而端到端已坏。契约\", \"最值得立刻做的改进是引入外部独立测试（如第三方审计或开源社区验证）。理由：自检通过可能掩盖内部盲点",
+      "session_id": "iteration-r66",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789559532.243709
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789559532.2438612,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

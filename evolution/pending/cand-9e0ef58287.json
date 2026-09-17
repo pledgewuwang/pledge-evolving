@@ -1,0 +1,35 @@
+{
+  "id": "cand-9e0ef58287",
+  "kind": "skill",
+  "target": "evolution\\skill-20260916.md",
+  "content": "- [workflow] {\"round\": 44, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md 并写入 outputs/summary.md，三条要点均为原文内容：本季度完成的三件事、遗留问题（两个模块被隔离并回传作者修法）、下季度重点（三席位评审接入发布门禁、跑通 15 个真实任务闭环）。回读校验一致。\", \"seconds\": 9.7}, \"verdicts\": [\"把「真模型端到端冒烟」纳入闸门自动回归（而非手动另跑）。\\n\\n理由：278 项 checks 全绿多为静态/单测粒度，无法保护骨架与模块间接口契约；端到端是唯一验证真实调用链的证据。不固化则接口一改就无声退化，可维护性无从度量。\", \"**最值得立刻做的改进：引入一\n- [pitfall] {\"round\": 44, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md 并写入 outputs/summary.md，三条要点均为原文内容：本季度完成的三件事、遗留问题（两个模块被隔离并回传作者修法）、下季度重点（三席位评审接入发布门禁、跑通 15 个真实任务闭环）。回读校验一致。\", \"seconds\": 9.7}, \"verdicts\": [\"把「真模型端到端冒烟」纳入闸门自动回归（而非手动另跑）。\\n\\n理由：278 项 checks 全绿多为静态/单测粒度，无法保护骨架与模块间接口契约；端到端是唯一验证真实调用链的证据。不固化则接口一改就无声退化，可维护性无从度量。\", \"**最值得立刻做的改进：引入一",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 44, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md 并写入 outputs/summary.md，三条要点均为原文内容：本季度完成的三件事、遗留问题（两个模块被隔离并回传作者修法）、下季度重点（三席位评审接入发布门禁、跑通 15 个真实任务闭环）。回读校验一致。\", \"seconds\": 9.7}, \"verdicts\": [\"把「真模型端到端冒烟」纳入闸门自动回归（而非手动另跑）。\\n\\n理由：278 项 checks 全绿多为静态/单测粒度，无法保护骨架与模块间接口契约；端到端是唯一验证真实调用链的证据。不固化则接口一改就无声退化，可维护性无从度量。\", \"**最值得立刻做的改进：引入一",
+      "session_id": "iteration-r44",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789512839.1132405
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 44, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md 并写入 outputs/summary.md，三条要点均为原文内容：本季度完成的三件事、遗留问题（两个模块被隔离并回传作者修法）、下季度重点（三席位评审接入发布门禁、跑通 15 个真实任务闭环）。回读校验一致。\", \"seconds\": 9.7}, \"verdicts\": [\"把「真模型端到端冒烟」纳入闸门自动回归（而非手动另跑）。\\n\\n理由：278 项 checks 全绿多为静态/单测粒度，无法保护骨架与模块间接口契约；端到端是唯一验证真实调用链的证据。不固化则接口一改就无声退化，可维护性无从度量。\", \"**最值得立刻做的改进：引入一",
+      "session_id": "iteration-r44",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789512839.113362
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789512839.1135795,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

@@ -1,0 +1,27 @@
+{
+  "id": "cand-643963e361",
+  "kind": "note",
+  "target": "evolution\\note-20260917.md",
+  "content": "- [pitfall] {\"round\": 78, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并将原文三条要点（本季度完成的三件事、遗留问题、下季度重点）以无序列表形式逐条写入 outputs/summary.md，每条一行，内容均取自原文。\", \"seconds\": 7.6}, \"verdicts\": [\"**立刻做：给闸门加\\\"故障注入\\\"自检——故意塞一个已知坏模块，确认它必被隔离、检查必变红。**\\n\\n理由：439/439 全过、隔离为空，只证明当前代码干净，没证明闸门有判决力。全绿而无反例，很可能是断言太弱或阈值太松；真模型冒烟也只覆盖了顺\", \"立即引入**外部测试代码覆盖率审计**。当前全量自检与冒烟均由框架内部生成",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 78, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并将原文三条要点（本季度完成的三件事、遗留问题、下季度重点）以无序列表形式逐条写入 outputs/summary.md，每条一行，内容均取自原文。\", \"seconds\": 7.6}, \"verdicts\": [\"**立刻做：给闸门加\\\"故障注入\\\"自检——故意塞一个已知坏模块，确认它必被隔离、检查必变红。**\\n\\n理由：439/439 全过、隔离为空，只证明当前代码干净，没证明闸门有判决力。全绿而无反例，很可能是断言太弱或阈值太松；真模型冒烟也只覆盖了顺\", \"立即引入**外部测试代码覆盖率审计**。当前全量自检与冒烟均由框架内部生成",
+      "session_id": "iteration-r78",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789602719.0884044
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789602719.0886185,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

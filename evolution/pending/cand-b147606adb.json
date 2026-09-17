@@ -1,0 +1,27 @@
+{
+  "id": "cand-b147606adb",
+  "kind": "note",
+  "target": "evolution\\note-20260917.md",
+  "content": "- [pitfall] {\"round\": 87, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已完成。读取了 `inputs/notes.md`，从中提炼出三条要点并写入 `outputs/summary.md`（Markdown 无序列表，每条一行、内容均取自原文）：本季度完成的三件事、遗留的两个模块隔离问题、下季度的三席位评审接入重点。回读验证文件内容正确。\\n\\ndone\", \"seconds\": 11.5}, \"verdicts\": [\"用户要120字内，直接给结论。需要一个最值得立刻做的改进，从工程质量角度：骨架、接口、可维护性。\\n\\n全绿+冒烟通过 → 下一步不是加功能，而是防止\\\"绿灯幻觉\\\"。最值得做的一件事：把端到端冒烟的判分固化进 CI 闸门（或把439项检查与真实",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 87, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已完成。读取了 `inputs/notes.md`，从中提炼出三条要点并写入 `outputs/summary.md`（Markdown 无序列表，每条一行、内容均取自原文）：本季度完成的三件事、遗留的两个模块隔离问题、下季度的三席位评审接入重点。回读验证文件内容正确。\\n\\ndone\", \"seconds\": 11.5}, \"verdicts\": [\"用户要120字内，直接给结论。需要一个最值得立刻做的改进，从工程质量角度：骨架、接口、可维护性。\\n\\n全绿+冒烟通过 → 下一步不是加功能，而是防止\\\"绿灯幻觉\\\"。最值得做的一件事：把端到端冒烟的判分固化进 CI 闸门（或把439项检查与真实",
+      "session_id": "iteration-r87",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789618920.0170624
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789618920.0172136,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

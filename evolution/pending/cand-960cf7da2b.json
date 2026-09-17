@@ -1,0 +1,35 @@
+{
+  "id": "cand-960cf7da2b",
+  "kind": "skill",
+  "target": "evolution\\skill-20260917.md",
+  "content": "- [workflow] {\"round\": 79, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点写入 `outputs/summary.md`：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布门禁，跑通 15 个真实任务闭环。\\n\\n\", \"seconds\": 12.6}, \"verdicts\": [\"**把真模型端到端冒烟固化进闸门，作为可重复回归基线（锁模型版本、失败即隔离并留快照）。**\\n\\n理由：439 项自检是框架内部断言，全绿只证明\\\"自己跟自己对得上\\\"；唯一穿透真实接口的验证目\n- [pitfall] {\"round\": 79, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点写入 `outputs/summary.md`：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布门禁，跑通 15 个真实任务闭环。\\n\\n\", \"seconds\": 12.6}, \"verdicts\": [\"**把真模型端到端冒烟固化进闸门，作为可重复回归基线（锁模型版本、失败即隔离并留快照）。**\\n\\n理由：439 项自检是框架内部断言，全绿只证明\\\"自己跟自己对得上\\\"；唯一穿透真实接口的验证目",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 79, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点写入 `outputs/summary.md`：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布门禁，跑通 15 个真实任务闭环。\\n\\n\", \"seconds\": 12.6}, \"verdicts\": [\"**把真模型端到端冒烟固化进闸门，作为可重复回归基线（锁模型版本、失败即隔离并留快照）。**\\n\\n理由：439 项自检是框架内部断言，全绿只证明\\\"自己跟自己对得上\\\"；唯一穿透真实接口的验证目",
+      "session_id": "iteration-r79",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789604545.9993258
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 79, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点写入 `outputs/summary.md`：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布门禁，跑通 15 个真实任务闭环。\\n\\n\", \"seconds\": 12.6}, \"verdicts\": [\"**把真模型端到端冒烟固化进闸门，作为可重复回归基线（锁模型版本、失败即隔离并留快照）。**\\n\\n理由：439 项自检是框架内部断言，全绿只证明\\\"自己跟自己对得上\\\"；唯一穿透真实接口的验证目",
+      "session_id": "iteration-r79",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789604545.9994638
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789604545.9999094,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

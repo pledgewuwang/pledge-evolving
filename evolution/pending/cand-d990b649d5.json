@@ -1,0 +1,27 @@
+{
+  "id": "cand-d990b649d5",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 49, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（三段原文），提取三条要点写入 `outputs/summary.md`，内容均为原文逐条引用：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布门禁\", \"seconds\": 11.2}, \"verdicts\": [\"立刻做：给贡献模块闸门加「契约冻结 + 失败注入」用例。\\n\\n理由：335/335 全绿、零隔离，说明闸门只覆盖了 happy path，回归、污染、接口破坏类风险未被探测。骨架够稳了，下一步应让红",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 49, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`（三段原文），提取三条要点写入 `outputs/summary.md`，内容均为原文逐条引用：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布门禁\", \"seconds\": 11.2}, \"verdicts\": [\"立刻做：给贡献模块闸门加「契约冻结 + 失败注入」用例。\\n\\n理由：335/335 全绿、零隔离，说明闸门只覆盖了 happy path，回归、污染、接口破坏类风险未被探测。骨架够稳了，下一步应让红",
+      "session_id": "iteration-r49",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789521842.259504
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789521842.259639,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

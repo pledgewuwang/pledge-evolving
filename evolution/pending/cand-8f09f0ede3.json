@@ -1,0 +1,27 @@
+{
+  "id": "cand-8f09f0ede3",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 54, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已读取 inputs/notes.md（三行正文：本季度完成事项、遗留问题、下季度重点），并将三条要点逐条原文写入 outputs/summary.md，采用 Markdown 无序列表，每条一行。写后回读校验通过。\\n\\ndone\", \"seconds\": 22.1}, \"verdicts\": [\"**把这次真模型端到端冒烟固化为可重复的契约回归用例（golden case + 五项判分阈值），纳入默认闸门。**\\n\\n理由：360/360 与 11/11 属静态/单元级，冒烟是手工一次性证据；真模型输出有漂移，一旦换模型或改 promp\", \"应优先对 **\\\"360/360 checks ",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 54, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已读取 inputs/notes.md（三行正文：本季度完成事项、遗留问题、下季度重点），并将三条要点逐条原文写入 outputs/summary.md，采用 Markdown 无序列表，每条一行。写后回读校验通过。\\n\\ndone\", \"seconds\": 22.1}, \"verdicts\": [\"**把这次真模型端到端冒烟固化为可重复的契约回归用例（golden case + 五项判分阈值），纳入默认闸门。**\\n\\n理由：360/360 与 11/11 属静态/单元级，冒烟是手工一次性证据；真模型输出有漂移，一旦换模型或改 promp\", \"应优先对 **\\\"360/360 checks ",
+      "session_id": "iteration-r54",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789541979.7710943
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789541979.7713351,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

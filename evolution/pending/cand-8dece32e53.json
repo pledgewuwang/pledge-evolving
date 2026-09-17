@@ -1,0 +1,27 @@
+{
+  "id": "cand-8dece32e53",
+  "kind": "skill",
+  "target": "evolution\\skill-20260917.md",
+  "content": "- [workflow] {\"round\": 77, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，把三条要点（本季度完成事项、遗留问题、下季度重点）逐条取自原文，写成 Markdown 无序列表写入 `outputs/summary.md`，并回读确认内容一致。\", \"seconds\": 9.7}, \"verdicts\": [\"把真模型端到端冒烟固化为 CI 必过门禁，并留档基线产物。\\n\\n理由：439 项自检是结构/契约层的，全绿只证明骨架没坏；真模型冒烟仅跑了一次，属一次性证据，无法防回归。它是唯一覆盖\\\"接口在真实依赖下是否成立\\\"的关口，缺了它，后续重构与模块接\", \"最值得立刻做的改进是**为测试框架自身引入外部验证**",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 77, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，把三条要点（本季度完成事项、遗留问题、下季度重点）逐条取自原文，写成 Markdown 无序列表写入 `outputs/summary.md`，并回读确认内容一致。\", \"seconds\": 9.7}, \"verdicts\": [\"把真模型端到端冒烟固化为 CI 必过门禁，并留档基线产物。\\n\\n理由：439 项自检是结构/契约层的，全绿只证明骨架没坏；真模型冒烟仅跑了一次，属一次性证据，无法防回归。它是唯一覆盖\\\"接口在真实依赖下是否成立\\\"的关口，缺了它，后续重构与模块接\", \"最值得立刻做的改进是**为测试框架自身引入外部验证**",
+      "session_id": "iteration-r77",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789600932.8117447
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789600932.812003,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

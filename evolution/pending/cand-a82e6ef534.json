@@ -1,0 +1,35 @@
+{
+  "id": "cand-a82e6ef534",
+  "kind": "skill",
+  "target": "evolution\\skill-20260915.md",
+  "content": "- [workflow] {\"round\": 26, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 18.9}, \"verdicts\": [\"最该做：把这条真模型 E2E 冒烟升为必过闸门，并与 253 项自检同优先级。\\n\\n理由：253 项全绿、11/11 健康，却漏掉真实链路 er\n- [pitfall] {\"round\": 26, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 18.9}, \"verdicts\": [\"最该做：把这条真模型 E2E 冒烟升为必过闸门，并与 253 项自检同优先级。\\n\\n理由：253 项全绿、11/11 健康，却漏掉真实链路 er",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 26, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 18.9}, \"verdicts\": [\"最该做：把这条真模型 E2E 冒烟升为必过闸门，并与 253 项自检同优先级。\\n\\n理由：253 项全绿、11/11 健康，却漏掉真实链路 er",
+      "session_id": "iteration-r26",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789453324.1092496
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 26, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 18.9}, \"verdicts\": [\"最该做：把这条真模型 E2E 冒烟升为必过闸门，并与 253 项自检同优先级。\\n\\n理由：253 项全绿、11/11 健康，却漏掉真实链路 er",
+      "session_id": "iteration-r26",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789453324.109359
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789453324.109491,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

@@ -1,0 +1,43 @@
+{
+  "id": "cand-143bffeab5",
+  "kind": "skill",
+  "target": "evolution\\skill-20260916.md",
+  "content": "- [workflow] {\"round\": 45, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n我从 `inputs/notes.md` 中提炼了三条要点，原样写入 `outputs/summary.md`（Markdown 无序列表，每条一行，均为原文表述）：本季度完成的三件事、遗留的两模块隔离问题、下季度重点。\", \"seconds\": 8.0}, \"verdicts\": [\"建议：把模块接口契约固化成快照基线并接入 CI 门禁。\\n\\n理由：287/287 全绿只证明\\\"当下一致\\\"，healthy 计数与闸门都不锁定签名。无基线时，下次重构改参数、返回值或事件名会静默穿透，端到端冒烟也未必覆盖。快照成本低，直接护住骨\", \"立即引入外部独立验证：让核心模块接受未经事\n- [pitfall] {\"round\": 45, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n我从 `inputs/notes.md` 中提炼了三条要点，原样写入 `outputs/summary.md`（Markdown 无序列表，每条一行，均为原文表述）：本季度完成的三件事、遗留的两模块隔离问题、下季度重点。\", \"seconds\": 8.0}, \"verdicts\": [\"建议：把模块接口契约固化成快照基线并接入 CI 门禁。\\n\\n理由：287/287 全绿只证明\\\"当下一致\\\"，healthy 计数与闸门都不锁定签名。无基线时，下次重构改参数、返回值或事件名会静默穿透，端到端冒烟也未必覆盖。快照成本低，直接护住骨\", \"立即引入外部独立验证：让核心模块接受未经事\n- [success] {\"round\": 45, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n我从 `inputs/notes.md` 中提炼了三条要点，原样写入 `outputs/summary.md`（Markdown 无序列表，每条一行，均为原文表述）：本季度完成的三件事、遗留的两模块隔离问题、下季度重点。\", \"seconds\": 8.0}, \"verdicts\": [\"建议：把模块接口契约固化成快照基线并接入 CI 门禁。\\n\\n理由：287/287 全绿只证明\\\"当下一致\\\"，healthy 计数与闸门都不锁定签名。无基线时，下次重构改参数、返回值或事件名会静默穿透，端到端冒烟也未必覆盖。快照成本低，直接护住骨\", \"立即引入外部独立验证：让核心模块接受未经事",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 45, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n我从 `inputs/notes.md` 中提炼了三条要点，原样写入 `outputs/summary.md`（Markdown 无序列表，每条一行，均为原文表述）：本季度完成的三件事、遗留的两模块隔离问题、下季度重点。\", \"seconds\": 8.0}, \"verdicts\": [\"建议：把模块接口契约固化成快照基线并接入 CI 门禁。\\n\\n理由：287/287 全绿只证明\\\"当下一致\\\"，healthy 计数与闸门都不锁定签名。无基线时，下次重构改参数、返回值或事件名会静默穿透，端到端冒烟也未必覆盖。快照成本低，直接护住骨\", \"立即引入外部独立验证：让核心模块接受未经事",
+      "session_id": "iteration-r45",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789514621.02513
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 45, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n我从 `inputs/notes.md` 中提炼了三条要点，原样写入 `outputs/summary.md`（Markdown 无序列表，每条一行，均为原文表述）：本季度完成的三件事、遗留的两模块隔离问题、下季度重点。\", \"seconds\": 8.0}, \"verdicts\": [\"建议：把模块接口契约固化成快照基线并接入 CI 门禁。\\n\\n理由：287/287 全绿只证明\\\"当下一致\\\"，healthy 计数与闸门都不锁定签名。无基线时，下次重构改参数、返回值或事件名会静默穿透，端到端冒烟也未必覆盖。快照成本低，直接护住骨\", \"立即引入外部独立验证：让核心模块接受未经事",
+      "session_id": "iteration-r45",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789514621.0252457
+    },
+    {
+      "kind": "success",
+      "text": "{\"round\": 45, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n我从 `inputs/notes.md` 中提炼了三条要点，原样写入 `outputs/summary.md`（Markdown 无序列表，每条一行，均为原文表述）：本季度完成的三件事、遗留的两模块隔离问题、下季度重点。\", \"seconds\": 8.0}, \"verdicts\": [\"建议：把模块接口契约固化成快照基线并接入 CI 门禁。\\n\\n理由：287/287 全绿只证明\\\"当下一致\\\"，healthy 计数与闸门都不锁定签名。无基线时，下次重构改参数、返回值或事件名会静默穿透，端到端冒烟也未必覆盖。快照成本低，直接护住骨\", \"立即引入外部独立验证：让核心模块接受未经事",
+      "session_id": "iteration-r45",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789514621.0253432
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789514621.0254076,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

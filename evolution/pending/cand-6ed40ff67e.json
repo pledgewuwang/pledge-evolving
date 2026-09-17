@@ -1,0 +1,35 @@
+{
+  "id": "cand-6ed40ff67e",
+  "kind": "skill",
+  "target": "evolution\\skill-20260916.md",
+  "content": "- [workflow] {\"round\": 71, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 13.1}, \"verd\n- [pitfall] {\"round\": 71, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 13.1}, \"verd",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 71, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 13.1}, \"verd",
+      "session_id": "iteration-r71",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789565263.8489466
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 71, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 13.1}, \"verd",
+      "session_id": "iteration-r71",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789565263.8491957
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789565263.8495386,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

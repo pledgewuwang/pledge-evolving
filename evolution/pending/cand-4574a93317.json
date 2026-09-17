@@ -1,0 +1,43 @@
+{
+  "id": "cand-4574a93317",
+  "kind": "skill",
+  "target": "evolution\\skill-20260915.md",
+  "content": "- [workflow] {\"round\": 32, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点以 Markdown 无序列表写入 `outputs/summary.md`，每条一行，内容均逐字取自原文（本季度完成事项、遗留问题、下季度重点）。写入后已读回校验，文件内容与预期一致（99 字节）。\", \"seconds\": 29.2}, \"verdicts\": [\"结论：把这次真模型端到端冒烟脚本固化成可复跑的契约测试，并挂进贡献闸门。\\n\\n理由：254 项自检全绿，但冒烟是手工一次性验证，属于\\\"跑过即忘\\\"。骨架与接口一旦被改动，无自动回归兜底——这才是当前最大的可维护性缺口。\", \"**最优先改进：对五项判分逻辑\n- [pitfall] {\"round\": 32, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点以 Markdown 无序列表写入 `outputs/summary.md`，每条一行，内容均逐字取自原文（本季度完成事项、遗留问题、下季度重点）。写入后已读回校验，文件内容与预期一致（99 字节）。\", \"seconds\": 29.2}, \"verdicts\": [\"结论：把这次真模型端到端冒烟脚本固化成可复跑的契约测试，并挂进贡献闸门。\\n\\n理由：254 项自检全绿，但冒烟是手工一次性验证，属于\\\"跑过即忘\\\"。骨架与接口一旦被改动，无自动回归兜底——这才是当前最大的可维护性缺口。\", \"**最优先改进：对五项判分逻辑\n- [success] {\"round\": 32, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点以 Markdown 无序列表写入 `outputs/summary.md`，每条一行，内容均逐字取自原文（本季度完成事项、遗留问题、下季度重点）。写入后已读回校验，文件内容与预期一致（99 字节）。\", \"seconds\": 29.2}, \"verdicts\": [\"结论：把这次真模型端到端冒烟脚本固化成可复跑的契约测试，并挂进贡献闸门。\\n\\n理由：254 项自检全绿，但冒烟是手工一次性验证，属于\\\"跑过即忘\\\"。骨架与接口一旦被改动，无自动回归兜底——这才是当前最大的可维护性缺口。\", \"**最优先改进：对五项判分逻辑",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 32, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点以 Markdown 无序列表写入 `outputs/summary.md`，每条一行，内容均逐字取自原文（本季度完成事项、遗留问题、下季度重点）。写入后已读回校验，文件内容与预期一致（99 字节）。\", \"seconds\": 29.2}, \"verdicts\": [\"结论：把这次真模型端到端冒烟脚本固化成可复跑的契约测试，并挂进贡献闸门。\\n\\n理由：254 项自检全绿，但冒烟是手工一次性验证，属于\\\"跑过即忘\\\"。骨架与接口一旦被改动，无自动回归兜底——这才是当前最大的可维护性缺口。\", \"**最优先改进：对五项判分逻辑",
+      "session_id": "iteration-r32",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789464142.451999
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 32, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点以 Markdown 无序列表写入 `outputs/summary.md`，每条一行，内容均逐字取自原文（本季度完成事项、遗留问题、下季度重点）。写入后已读回校验，文件内容与预期一致（99 字节）。\", \"seconds\": 29.2}, \"verdicts\": [\"结论：把这次真模型端到端冒烟脚本固化成可复跑的契约测试，并挂进贡献闸门。\\n\\n理由：254 项自检全绿，但冒烟是手工一次性验证，属于\\\"跑过即忘\\\"。骨架与接口一旦被改动，无自动回归兜底——这才是当前最大的可维护性缺口。\", \"**最优先改进：对五项判分逻辑",
+      "session_id": "iteration-r32",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789464142.452106
+    },
+    {
+      "kind": "success",
+      "text": "{\"round\": 32, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，并将三条要点以 Markdown 无序列表写入 `outputs/summary.md`，每条一行，内容均逐字取自原文（本季度完成事项、遗留问题、下季度重点）。写入后已读回校验，文件内容与预期一致（99 字节）。\", \"seconds\": 29.2}, \"verdicts\": [\"结论：把这次真模型端到端冒烟脚本固化成可复跑的契约测试，并挂进贡献闸门。\\n\\n理由：254 项自检全绿，但冒烟是手工一次性验证，属于\\\"跑过即忘\\\"。骨架与接口一旦被改动，无自动回归兜底——这才是当前最大的可维护性缺口。\", \"**最优先改进：对五项判分逻辑",
+      "session_id": "iteration-r32",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789464142.452194
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789464142.4522393,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

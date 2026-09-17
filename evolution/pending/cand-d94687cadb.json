@@ -1,0 +1,27 @@
+{
+  "id": "cand-d94687cadb",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 69, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并写入 `outputs/summary.md`：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布门禁，跑通 15 个真实任务闭环。\", \"seconds\": 16.2}, \"verdicts\": [\"**把「真模型端到端冒烟」固化为 CI 阻塞闸门（而非一次性手动验证）。**\\n\\n理由：413 项自检多为单元与静态检查，覆盖不到真实模型下的接口契约漂移。本轮冒烟\\\"通过\\\"目前只是人工结论，未进",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 69, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并写入 `outputs/summary.md`：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：把三席位评审接入发布门禁，跑通 15 个真实任务闭环。\", \"seconds\": 16.2}, \"verdicts\": [\"**把「真模型端到端冒烟」固化为 CI 阻塞闸门（而非一次性手动验证）。**\\n\\n理由：413 项自检多为单元与静态检查，覆盖不到真实模型下的接口契约漂移。本轮冒烟\\\"通过\\\"目前只是人工结论，未进",
+      "session_id": "iteration-r69",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789563124.9076571
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789563124.9078445,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

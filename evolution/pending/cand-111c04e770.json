@@ -1,0 +1,27 @@
+{
+  "id": "cand-111c04e770",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [pitfall] {\"round\": 67, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条原文要点并写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均来自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度\", \"seconds\": 12.7}, \"verdicts\": [\"**结论：先把那 3 个失败项显式处理掉——要么修，要么登记为带到期日和责任人的豁免。**\\n\\n理由：隔离为空、healthy 满分，说明这 3 项红被静默容忍了，闸门在\\\"跑了但不拦\\\"。绿灯口径",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 67, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条原文要点并写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均来自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度\", \"seconds\": 12.7}, \"verdicts\": [\"**结论：先把那 3 个失败项显式处理掉——要么修，要么登记为带到期日和责任人的豁免。**\\n\\n理由：隔离为空、healthy 满分，说明这 3 项红被静默容忍了，闸门在\\\"跑了但不拦\\\"。绿灯口径",
+      "session_id": "iteration-r67",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789561329.9103992
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789561329.9105508,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

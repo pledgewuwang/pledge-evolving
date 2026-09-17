@@ -1,0 +1,10 @@
+{
+  "heartbeat": "forge 参考实现（集成者）",
+  "scheduler": "阶跃龙虾（StepClaw）",
+  "toolhost": "Trae",
+  "replay": "zcode",
+  "catalog": "PI agent",
+  "curator": "Hermes Agent",
+  "teams": "WorkBuddy（CodeBuddy Code）",
+  "compactor": "OpenCode"
+}

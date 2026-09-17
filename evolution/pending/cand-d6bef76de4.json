@@ -1,0 +1,35 @@
+{
+  "id": "cand-d6bef76de4",
+  "kind": "skill",
+  "target": "evolution\\skill-20260915.md",
+  "content": "- [workflow] {\"round\": 43, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已完成：读取 inputs/notes.md（原文包含项目进展、遗留问题、下季度重点三段内容），提炼出三条要点并以 Markdown 无序列表写入 outputs/summary.md，每条均直接取自原文。\\n\\ndone\", \"seconds\": 16.2}, \"verdicts\": [\"最该做：把这次一次性真模型冒烟固化成常驻 CI 契约测试（补失败/超时路径），并给 11 个模块的公开接口打契约快照。\\n\\n理由：256 项自检是自证，缺外部回归护栏；接口被后续 PR 静默改动时，隔离为空也拦不住。此举成本低，直接防骨架腐化\", \"最值得立刻做的改进：**引入外部真实数据集进行交叉验证**\n- [pitfall] {\"round\": 43, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已完成：读取 inputs/notes.md（原文包含项目进展、遗留问题、下季度重点三段内容），提炼出三条要点并以 Markdown 无序列表写入 outputs/summary.md，每条均直接取自原文。\\n\\ndone\", \"seconds\": 16.2}, \"verdicts\": [\"最该做：把这次一次性真模型冒烟固化成常驻 CI 契约测试（补失败/超时路径），并给 11 个模块的公开接口打契约快照。\\n\\n理由：256 项自检是自证，缺外部回归护栏；接口被后续 PR 静默改动时，隔离为空也拦不住。此举成本低，直接防骨架腐化\", \"最值得立刻做的改进：**引入外部真实数据集进行交叉验证**",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 43, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已完成：读取 inputs/notes.md（原文包含项目进展、遗留问题、下季度重点三段内容），提炼出三条要点并以 Markdown 无序列表写入 outputs/summary.md，每条均直接取自原文。\\n\\ndone\", \"seconds\": 16.2}, \"verdicts\": [\"最该做：把这次一次性真模型冒烟固化成常驻 CI 契约测试（补失败/超时路径），并给 11 个模块的公开接口打契约快照。\\n\\n理由：256 项自检是自证，缺外部回归护栏；接口被后续 PR 静默改动时，隔离为空也拦不住。此举成本低，直接防骨架腐化\", \"最值得立刻做的改进：**引入外部真实数据集进行交叉验证**",
+      "session_id": "iteration-r43",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789483928.4704998
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 43, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已完成：读取 inputs/notes.md（原文包含项目进展、遗留问题、下季度重点三段内容），提炼出三条要点并以 Markdown 无序列表写入 outputs/summary.md，每条均直接取自原文。\\n\\ndone\", \"seconds\": 16.2}, \"verdicts\": [\"最该做：把这次一次性真模型冒烟固化成常驻 CI 契约测试（补失败/超时路径），并给 11 个模块的公开接口打契约快照。\\n\\n理由：256 项自检是自证，缺外部回归护栏；接口被后续 PR 静默改动时，隔离为空也拦不住。此举成本低，直接防骨架腐化\", \"最值得立刻做的改进：**引入外部真实数据集进行交叉验证**",
+      "session_id": "iteration-r43",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789483928.4706101
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789483928.4707844,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

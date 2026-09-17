@@ -1,0 +1,27 @@
+{
+  "id": "cand-118a92a153",
+  "kind": "note",
+  "target": "evolution\\note-20260916.md",
+  "content": "- [success] {\"round\": 62, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：\", \"seconds\": 8.5}, \"verdicts\": [\"**把本轮真模型冒烟的输入输出录制成契约快照，接入贡献模块闸门（用 stub 回放，不调真模型）。**\\n\\n理由：当前 371 项全绿说明问题不在缺陷，而在防退化。真模型冒烟贵、慢、非确定性，注定只能",
+  "signals": [
+    {
+      "kind": "success",
+      "text": "{\"round\": 62, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重点：\", \"seconds\": 8.5}, \"verdicts\": [\"**把本轮真模型冒烟的输入输出录制成契约快照，接入贡献模块闸门（用 stub 回放，不调真模型）。**\\n\\n理由：当前 371 项全绿说明问题不在缺陷，而在防退化。真模型冒烟贵、慢、非确定性，注定只能",
+      "session_id": "iteration-r62",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789554122.8041022
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789554122.8041954,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

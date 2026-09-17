@@ -1,0 +1,27 @@
+{
+  "id": "cand-f577e04caf",
+  "kind": "note",
+  "target": "evolution\\note-20260917.md",
+  "content": "- [pitfall] {\"round\": 88, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 11.8}, \"verd",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 88, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": false, \"failed_checks\": [\"S1-final-answer:stopped=error\", \"S2-output-on-disk:chars=0\", \"S3-native-tools:[]\", \"S4-session-replays:events=3\"], \"answer\": \"[model error] all providers failed: [{'provider': 'smoke', 'model': 'deepseek-v4-flash', 'status': 'retryable', 'error': \\\"smoke: URLError(SSLEOFError(8, '[SSL: \", \"seconds\": 11.8}, \"verd",
+      "session_id": "iteration-r88",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789620734.219146
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789620734.2193403,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

@@ -1,0 +1,27 @@
+{
+  "id": "cand-ce54fd2add",
+  "kind": "note",
+  "target": "evolution\\note-20260915.md",
+  "content": "- [pitfall] {\"round\": 31, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已完成：读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容逐字取自原文）：本季度三件事（网关常驻化、贡献模块闸门、成本核算）、遗留问题（两个模块因自检无逐条证据被隔离，已回传作者修法）、下季度重点（三席位评审接入发布门禁，跑通\", \"seconds\": 23.4}, \"verdicts\": [\"结论：把 254 项自检中隐含的模块契约抽成显式接口契约测试，并补负向用例（错误输入、缺依赖、部分失败）。\\n\\n理由：全绿且零隔离，说明正向路径覆盖充分、耦合低；此刻风险不在\\\"会不会坏\\\"，而在\\\"改了不知道",
+  "signals": [
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 31, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"已完成：读取 `inputs/notes.md`，提炼三条要点写入 `outputs/summary.md`（Markdown 无序列表，每条一行，内容逐字取自原文）：本季度三件事（网关常驻化、贡献模块闸门、成本核算）、遗留问题（两个模块因自检无逐条证据被隔离，已回传作者修法）、下季度重点（三席位评审接入发布门禁，跑通\", \"seconds\": 23.4}, \"verdicts\": [\"结论：把 254 项自检中隐含的模块契约抽成显式接口契约测试，并补负向用例（错误输入、缺依赖、部分失败）。\\n\\n理由：全绿且零隔离，说明正向路径覆盖充分、耦合低；此刻风险不在\\\"会不会坏\\\"，而在\\\"改了不知道",
+      "session_id": "iteration-r31",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789462660.5567276
+    }
+  ],
+  "risk": "low",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": false,
+  "created_at": 1789462660.5570295,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

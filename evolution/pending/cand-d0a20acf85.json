@@ -1,0 +1,35 @@
+{
+  "id": "cand-d0a20acf85",
+  "kind": "skill",
+  "target": "evolution\\skill-20260916.md",
+  "content": "- [workflow] {\"round\": 74, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并以 Markdown 无序列表写入 `outputs/summary.md`（每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重\", \"seconds\": 26.2}, \"verdicts\": [\"**立刻做：把本轮自检 + 贡献模块闸门 + 端到端冒烟固化为 CI 门禁，失败即阻断合并。**\\n\\n理由：429/429 只是**一次性快照**，无回归防护；全绿恰恰掩盖\\\"下次改动无人拦\\\"的风\n- [pitfall] {\"round\": 74, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并以 Markdown 无序列表写入 `outputs/summary.md`（每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重\", \"seconds\": 26.2}, \"verdicts\": [\"**立刻做：把本轮自检 + 贡献模块闸门 + 端到端冒烟固化为 CI 门禁，失败即阻断合并。**\\n\\n理由：429/429 只是**一次性快照**，无回归防护；全绿恰恰掩盖\\\"下次改动无人拦\\\"的风",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 74, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并以 Markdown 无序列表写入 `outputs/summary.md`（每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重\", \"seconds\": 26.2}, \"verdicts\": [\"**立刻做：把本轮自检 + 贡献模块闸门 + 端到端冒烟固化为 CI 门禁，失败即阻断合并。**\\n\\n理由：429/429 只是**一次性快照**，无回归防护；全绿恰恰掩盖\\\"下次改动无人拦\\\"的风",
+      "session_id": "iteration-r74",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789570369.8972654
+    },
+    {
+      "kind": "pitfall",
+      "text": "{\"round\": 74, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 `inputs/notes.md`，提炼出三条要点并以 Markdown 无序列表写入 `outputs/summary.md`（每条一行，内容均取自原文）：\\n\\n- 本季度完成了三件事：网关常驻化、贡献模块闸门、成本核算。\\n- 遗留问题：两个模块因自检无逐条证据被隔离，已回传作者修法。\\n- 下季度重\", \"seconds\": 26.2}, \"verdicts\": [\"**立刻做：把本轮自检 + 贡献模块闸门 + 端到端冒烟固化为 CI 门禁，失败即阻断合并。**\\n\\n理由：429/429 只是**一次性快照**，无回归防护；全绿恰恰掩盖\\\"下次改动无人拦\\\"的风",
+      "session_id": "iteration-r74",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789570369.8973873
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789570369.8977244,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}

@@ -1,0 +1,27 @@
+{
+  "id": "cand-e40166e9be",
+  "kind": "skill",
+  "target": "evolution\\skill-20260915.md",
+  "content": "- [workflow] {\"round\": 36, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并将其中三条要点以 Markdown 无序列表写入 outputs/summary.md（写入 99 字节，每条一行，内容均逐字取自原文）：本季度完成的三件事、两个模块被隔离的遗留问题，以及下季度的重点方向。\", \"seconds\": 9.8}, \"verdicts\": [\"**立刻做：为跨模块边界加接口快照（签名/schema）契约测试，并接入闸门。**\\n\\n理由：254 项全过、11/11 健康，说明现有自检主要验证模块内部行为，不锁边界形状。贡献合入时最易静默破坏的恰是接口而非逻辑，而隔离区为空意味着没有兜\", \"**改进：引入独立",
+  "signals": [
+    {
+      "kind": "workflow",
+      "text": "{\"round\": 36, \"smoke\": {\"phase\": \"smoke\", \"ran\": true, \"ok\": true, \"failed_checks\": [], \"answer\": \"done\\n\\n已读取 inputs/notes.md，并将其中三条要点以 Markdown 无序列表写入 outputs/summary.md（写入 99 字节，每条一行，内容均逐字取自原文）：本季度完成的三件事、两个模块被隔离的遗留问题，以及下季度的重点方向。\", \"seconds\": 9.8}, \"verdicts\": [\"**立刻做：为跨模块边界加接口快照（签名/schema）契约测试，并接入闸门。**\\n\\n理由：254 项全过、11/11 健康，说明现有自检主要验证模块内部行为，不锁边界形状。贡献合入时最易静默破坏的恰是接口而非逻辑，而隔离区为空意味着没有兜\", \"**改进：引入独立",
+      "session_id": "iteration-r36",
+      "ordinal": -1,
+      "confidence": 0.7000000000000001,
+      "at": 1789471319.9987125
+    }
+  ],
+  "risk": "medium",
+  "provenance": "agent",
+  "status": "pending",
+  "requires_approval": true,
+  "created_at": 1789471319.999104,
+  "decided_at": 0.0,
+  "applied_at": 0.0,
+  "decision_by": "",
+  "previous_content": "",
+  "version": 0,
+  "note": ""
+}
