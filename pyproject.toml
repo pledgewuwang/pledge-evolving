@@ -28,4 +28,5 @@ packages = ["forge"]
 
 [tool.setuptools.package-data]
 forge = ["contrib/*.py", "contrib/*.md", "contrib/*.json",
-         "bundles/*.json", "templates/*.py", "templates/*.json"]
+         "bundles/*.json", "bundles/modes/*.json",
+         "templates/*.py", "templates/*.json"]

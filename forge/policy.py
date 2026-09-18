@@ -196,8 +196,21 @@ class Policy:
 
         # 2. sandbox: writes outside the granted roots (only write tools move data)
         if tool in WRITE_TOOLS:
-            targets = list(touching) or [str(v) for k, v in args.items()
-                                         if k in {"path", "file", "target"} and v]
+            # Collect all candidate paths from every source so container tools
+            # like apply_patch (patches[].path / edits[].path) are not silently
+            # skipped when the top-level 'path' key is absent.
+            extra: list[str] = []
+            patches_arg = args.get("patches") or args.get("edits") or []
+            if isinstance(patches_arg, list):
+                for _b in patches_arg:
+                    if isinstance(_b, dict):
+                        _p = _b.get("path")
+                        if _p:
+                            extra.append(str(_p))
+            targets = list(touching) + extra
+            if not targets:
+                targets = [str(v) for k, v in args.items()
+                           if k in {"path", "file", "target"} and v]
             for target in targets:
                 if not self.sandbox.allows_write(self.abs_path(target), self.workspace):
                     return Decision.DENY

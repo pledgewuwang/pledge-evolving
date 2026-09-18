@@ -31,7 +31,7 @@ from .checkpoint import CheckpointStore
 from .memory import ContextBudget, MemoryStore
 from .model import Completion, ModelRouter, TransportError
 from .pricing import CostLedger, cost_of, rate_for
-from .policy import Decision, Mode, Policy
+from .policy import Decision, Mode, Policy, WRITE_TOOLS
 from .session import Session
 from .tools import ToolContext, ToolRegistry, ToolResult
 from . import toolwire
@@ -724,7 +724,7 @@ class Agent:
                 for call in native_calls:
                     step = Step(index=len(steps) + 1, tool=call.name, args=call.args,
                                 note=f"native/{wire} id={call.id or '-'}")
-                    if self.checkpoints is not None and call.name in {"write_file", "shell_exec"}:
+                    if self.checkpoints is not None and call.name in WRITE_TOOLS:
                         point = self.checkpoints.snapshot(f"before {call.name}")
                         if point is not None:
                             step.note = f"checkpoint {point.commit[:8]}"
@@ -746,7 +746,7 @@ class Agent:
                 continue
 
             step = Step(index=index, tool=tool_name, args=args)
-            if self.checkpoints is not None and tool_name in {"write_file", "shell_exec"}:
+            if self.checkpoints is not None and tool_name in WRITE_TOOLS:
                 point = self.checkpoints.snapshot(f"before {tool_name}")
                 if point is not None:
                     step.note = f"checkpoint {point.commit[:8]}"

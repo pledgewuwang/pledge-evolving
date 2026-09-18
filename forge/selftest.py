@@ -3140,6 +3140,127 @@ def test_thinking_integration() -> None:
               str(warns3[:4]))
 
 
+def test_coding_mode() -> None:
+    """--coding: bundle layer, the two recovered write tools, atomic patch, surface narrowing."""
+    from .cli import _compose, build_parser
+    from .policy import WRITE_TOOLS
+    from .tools import ToolContext, ToolResult, ToolSpec, build_builtin_registry
+
+    registry = build_builtin_registry()
+    specs = {s.name: s for s in registry.all_specs()}
+    check("coding:edit-file-registered", "edit_file" in specs and not specs["edit_file"].read_only)
+    check("coding:apply-patch-registered", "apply_patch" in specs and not specs["apply_patch"].read_only)
+    check("coding:read-range-registered", "read_range" in specs and specs["read_range"].read_only)
+    check("coding:file-outline-registered", "file_outline" in specs and specs["file_outline"].read_only)
+    check("coding:write-tools-table-aligned",
+          {"edit_file", "apply_patch"}.issubset(set(WRITE_TOOLS)), str(sorted(WRITE_TOOLS)))
+
+    with tempfile.TemporaryDirectory() as tmp:
+        workspace = Path(tmp)
+        target = workspace / "mod.py"
+        target.write_text("def a():\n    return 1\n", encoding="utf-8")
+        policy = Policy(mode=Mode.ACCEPT_EDITS, sandbox=Sandbox.WORKSPACE_WRITE,
+                        workspace=workspace, non_interactive=True)
+        ctx = ToolContext(policy=policy, workspace=workspace)
+
+        ok = registry.invoke("edit_file", {"path": "mod.py", "old": "return 1", "new": "return 2"}, ctx)
+        check("coding:edit-file-replaces", ok.ok and "return 2" in target.read_text(encoding="utf-8"), ok.error)
+        miss = registry.invoke("edit_file", {"path": "mod.py", "old": "nope", "new": "x"}, ctx)
+        check("coding:edit-file-missing-anchor-refused", not miss.ok and "not found" in miss.error, miss.error)
+
+        rng = registry.invoke("read_range", {"path": "mod.py", "start": 1, "end": 1}, ctx)
+        check("coding:read-range-returns-line", rng.ok and "def a()" in rng.content, rng.content)
+        outline = registry.invoke("file_outline", {"path": "mod.py"}, ctx)
+        check("coding:file-outline-finds-symbol", outline.ok and "def a" in outline.content, outline.content)
+
+        before = target.read_text(encoding="utf-8")
+        atomic = registry.invoke("apply_patch", {"patches": [
+            {"path": "mod.py", "old": "return 2", "new": "return 3"},
+            {"path": "mod.py", "old": "absent-anchor", "new": "x"}]}, ctx)
+        check("coding:apply-patch-atomic-refuses",
+              not atomic.ok and target.read_text(encoding="utf-8") == before, atomic.error)
+        good = registry.invoke("apply_patch", {"patches": [
+            {"path": "mod.py", "old": "return 2", "new": "return 9"}]}, ctx)
+        check("coding:apply-patch-commits",
+              good.ok and "return 9" in target.read_text(encoding="utf-8"), good.error)
+
+    parser = build_parser()
+    check("coding:flag-default-off",
+          getattr(parser.parse_args(["dump-config", "--home", tempfile.gettempdir()]), "coding", False) is False)
+    with tempfile.TemporaryDirectory() as tmp2:
+        plain = _compose(parser.parse_args(["dump-config", "--home", tmp2]))
+        check("coding:default-has-no-coding-policy",
+              plain.get("policy", "mode") == "default", str(plain.get("policy", "mode")))
+        coded = _compose(parser.parse_args(["dump-config", "--home", tmp2, "--coding"]))
+        check("coding:flag-applies-policy",
+              coded.get("policy", "mode") == "acceptEdits"
+              and "edit_file" in (coded.get("policy", "allow") or ()),
+              str(coded.get("policy", "mode")))
+        check("coding:flag-raises-loop-budget", coded.get("loop", "maxSteps") == 40,
+              str(coded.get("loop", "maxSteps")))
+        exposed = coded.get("tools", "expose") or []
+        check("coding:flag-sets-tool-surface", "apply_patch" in exposed, str(exposed))
+        narrowed = build_builtin_registry(expose=exposed)
+        narrowed.register(ToolSpec(name="media_probe", description="not in the coding surface",
+                                   handler=lambda a, c: ToolResult(ok=True, content="x")))
+        _narrowed_names = narrowed.names()
+        check("coding:expose-narrows-surface",
+              "apply_patch" in _narrowed_names and "media_probe" not in _narrowed_names,
+              str(_narrowed_names))
+
+    # --- P0-1 regression: apply_patch must honour sandbox even when the target
+    #     path is inside patches[].path (not the top-level 'path' key) ----------
+    with tempfile.TemporaryDirectory() as tmp3:
+        _sb = Path(tmp3)
+        _ctx3 = ToolContext(policy=Policy(mode=Mode.ACCEPT_EDITS, sandbox=Sandbox.WORKSPACE_WRITE,
+                                          workspace=_sb, non_interactive=True), workspace=_sb)
+        _decoy = _sb / "decoy.txt"
+        _decoy.write_text("DECOY", encoding="utf-8")
+
+        # 1) absolute out-of-workspace path inside patches[].path
+        _victim = _sb.parent / "outside_forge_sandbox_test_victim.txt"
+        _victim.write_text("SAFE", encoding="utf-8")
+        r_abs = registry.invoke("apply_patch", {"patches": [{"path": str(_victim), "old": "SAFE", "new": "PWNED"}]}, _ctx3)
+        check("coding:sandbox-abs-oot-denied",
+              not r_abs.ok and _victim.read_text(encoding="utf-8") == "SAFE",
+              f"ok={r_abs.ok} content={_victim.read_text(encoding='utf-8')}")
+
+        # 2) ../ relative traversal inside patches[].path
+        _esc = _sb.parent / "outside_forge_sandbox_test_esc.txt"
+        _esc.write_text("SAFE2", encoding="utf-8")
+        r_rel = registry.invoke("apply_patch", {"patches": [{"path": "../outside_forge_sandbox_test_esc.txt", "old": "SAFE2", "new": "PWNED2"}]}, _ctx3)
+        check("coding:sandbox-rel-traversal-denied",
+              not r_rel.ok and _esc.read_text(encoding="utf-8") == "SAFE2",
+              f"ok={r_rel.ok} content={_esc.read_text(encoding='utf-8')}")
+
+        # 3) decoy: legal top-level 'path' + out-of-workspace real target in patches[].path
+        r_decoy = registry.invoke("apply_patch", {"path": "decoy.txt",
+            "patches": [{"path": str(_victim), "old": "SAFE", "new": "PWNED-3"}]}, _ctx3)
+        check("coding:sandbox-decoy-denied",
+              not r_decoy.ok and _victim.read_text(encoding="utf-8") == "SAFE",
+              f"ok={r_decoy.ok} content={_victim.read_text(encoding='utf-8')}")
+
+        # 4) 'edits' alias must trigger the same sandbox check
+        r_edits = registry.invoke("apply_patch", {"edits": [{"path": str(_victim), "old": "SAFE", "new": "PWNED-4"}]}, _ctx3)
+        check("coding:sandbox-edits-alias-denied",
+              not r_edits.ok and _victim.read_text(encoding="utf-8") == "SAFE",
+              f"ok={r_edits.ok} content={_victim.read_text(encoding='utf-8')}")
+
+        # 5) read-only sandbox must also block out-of-workspace writes
+        _ro_ctx = ToolContext(policy=Policy(mode=Mode.ACCEPT_EDITS, sandbox=Sandbox.READ_ONLY,
+                                            workspace=_sb, non_interactive=True), workspace=_sb)
+        r_ro = registry.invoke("apply_patch", {"patches": [{"path": str(_victim), "old": "SAFE", "new": "PWNED-RO"}]}, _ro_ctx)
+        check("coding:sandbox-readonly-denies-oot",
+              not r_ro.ok and _victim.read_text(encoding="utf-8") == "SAFE",
+              f"ok={r_ro.ok} content={_victim.read_text(encoding='utf-8')}")
+
+    for _f in [_victim, _esc, _decoy]:
+        try:
+            _f.unlink()
+        except FileNotFoundError:
+            pass
+
+
 # ---------------------------------------------------------------------------
 
 def run_selftest(workspace: Path | None = None, *, verbose: bool = True) -> int:
@@ -3154,6 +3275,7 @@ def run_selftest(workspace: Path | None = None, *, verbose: bool = True) -> int:
         test_native_tool_loop, test_smoke_harness_offline, test_global_optimizations,
         test_contrib_runtime_service, test_thinking_integration,
         test_loop_and_subagents, test_cli_surface, test_permission_profiles,
+        test_coding_mode,
     ]
     for suite in suites:
         try:

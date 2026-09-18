@@ -41,6 +41,13 @@ def _compose(args) -> Config:
     home = Path(args.home)
     bundle = Path(args.bundle) if getattr(args, "bundle", None) else None
     bundles = [bundle] if bundle else sorted(BUNDLE_DIR.glob("*.json"))
+    # --coding 叠加编码模式补丁层（放在 base 之后，后写胜）。它住在 modes/ 子目录，
+    # 所以默认 glob "*.json" 不会把它当成默认层（默认 run 保持纯 base）。
+    if getattr(args, "coding", False):
+        coding_bundle = BUNDLE_DIR / "modes" / "coding.json"
+        if not coding_bundle.is_file():
+            raise SystemExit(f"--coding bundle not found: {coding_bundle}")
+        bundles = list(bundles) + [coding_bundle]
     overlays = list(getattr(args, "overlay", []) or [])
     cfg = load_config(
         home,
@@ -60,7 +67,9 @@ def cmd_run(args) -> int:
     # 指令一（2026-09-15）：无头 run 链路默认即 balanced —— 工作区沙箱内
     # write_file/edit_file/apply_patch 免询问直写，越界（如系统目录）仍拦。
     # 显式传了 --profile 的以显式为准；保守/激进各自生效。
-    if not getattr(args, "profile", None):
+    # --coding 自带 policy 行：此时不注入 balanced 默认，否则会把编码模式的
+    # 策略行冲掉（apply_patch 是整行替换）。
+    if not getattr(args, "profile", None) and not getattr(args, "coding", False):
         args.profile = "balanced"
         args.i_know = True  # balanced 不需要确认门，仅避免默认值缺参
     cfg = _compose(args)
@@ -103,6 +112,9 @@ def cmd_run(args) -> int:
         workspace=workspace,
         config=cfg,
         router=router,
+        # 工具面收敛：配置层声明了 tools.expose 就落到注册表（比 prompt 里
+        # "请只用这几个" 强一个数量级）。默认无该行 -> None -> 行为零变化。
+        expose=cfg.get("tools", "expose", None),
         limits=LoopLimits(
             max_steps=int(cfg.get("loop", "maxSteps", 12)),
             max_depth=int(cfg.get("loop", "maxDepth", 2)),
@@ -472,6 +484,11 @@ def _common_options() -> argparse.ArgumentParser:
                              "aggressive=full access (requires --i-know)")
     common.add_argument("--i-know", action="store_true", default=argparse.SUPPRESS,
                         help="acknowledge aggressive-profile risks (required with --profile aggressive)")
+    # 第四维 · 任务形态：叠加 bundles/modes/coding.json（编码模式）。与 --profile
+    # （权限）正交：coding 自己带 policy 行；显式 --profile 仍可覆盖。
+    common.add_argument("--coding", action="store_true", default=argparse.SUPPRESS,
+                        help="coding mode: layer bundles/modes/coding.json "
+                             "(read-before-write contract, wider tool surface, bigger loop budget)")
     return common
 
 

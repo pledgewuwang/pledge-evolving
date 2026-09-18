@@ -275,6 +275,123 @@ def build_builtin_registry(
         return ToolResult(ok=True, content=f"wrote {len(str(args.get('content','')))} bytes to {path}")
 
     @reg.tool(
+        "edit_file",
+        "Replace an exact anchor (old -> new) inside a UTF-8 file, or overwrite a "
+        "1-indexed line range. Refuses an absent or ambiguous anchor unless replace_all.",
+        read_only=False,
+        schema={"path": "string", "old": "string", "new": "string",
+                "replace_all": "boolean", "start_line": "integer", "end_line": "integer"},
+    )
+    def edit_file(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+        path = _resolve(ctx.workspace, args.get("path", ""))
+        if not path.is_file():
+            return ToolResult(ok=False, error=f"not a file: {path}")
+        original = path.read_text(encoding="utf-8", errors="replace")
+        new = str(args.get("new", ""))
+        start_line, end_line = args.get("start_line"), args.get("end_line")
+        if start_line is not None or end_line is not None:
+            lines = original.splitlines(keepends=True)
+            s = int(start_line or 1)
+            e = int(end_line if end_line is not None else len(lines))
+            if s < 1 or e < s or e > len(lines):
+                return ToolResult(ok=False, error=f"line range {s}-{e} out of bounds (file has {len(lines)} lines)")
+            body = new if (not new or new.endswith("\n")) else new + "\n"
+            updated = "".join(lines[: s - 1]) + body + "".join(lines[e:])
+            path.write_text(updated, encoding="utf-8")
+            return ToolResult(ok=True, content=f"replaced lines {s}-{e} of {path}", meta={"lines": len(lines)})
+        old = str(args.get("old", ""))
+        if not old:
+            return ToolResult(ok=False, error="edit_file needs 'old' (or start_line/end_line)")
+        count = original.count(old)
+        if count == 0:
+            return ToolResult(ok=False, error=f"anchor not found in {path.name}")
+        replace_all = bool(args.get("replace_all"))
+        if count > 1 and not replace_all:
+            return ToolResult(ok=False,
+                              error=f"anchor is ambiguous in {path.name} ({count} matches); "
+                                    f"pass replace_all or add surrounding context")
+        updated = original.replace(old, new) if replace_all else original.replace(old, new, 1)
+        path.write_text(updated, encoding="utf-8")
+        return ToolResult(ok=True, content=f"edited {path} ({count if replace_all else 1} replacement(s))",
+                          meta={"matches": count})
+
+    @reg.tool(
+        "apply_patch",
+        "Apply a list of {path, old, new} edits ATOMICALLY: every block is validated "
+        "first, then every file is written; any failed block leaves all files untouched.",
+        read_only=False,
+        schema={"patches": "array"},
+    )
+    def apply_patch(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+        blocks = args.get("patches") or args.get("edits") or []
+        if not isinstance(blocks, list) or not blocks:
+            return ToolResult(ok=False, error="apply_patch needs a non-empty 'patches' list of {path, old, new}")
+        buffers: dict[Path, str] = {}
+        for i, block in enumerate(blocks):
+            if not isinstance(block, dict):
+                return ToolResult(ok=False, error=f"patch block {i} is not an object")
+            path = _resolve(ctx.workspace, block.get("path", ""))
+            current = buffers.get(path)
+            if current is None:
+                if not path.is_file():
+                    return ToolResult(ok=False, error=f"patch {i}: not a file: {path}")
+                current = path.read_text(encoding="utf-8", errors="replace")
+            old = str(block.get("old", ""))
+            if not old:
+                return ToolResult(ok=False, error=f"patch {i}: empty 'old' anchor")
+            count = current.count(old)
+            if count == 0:
+                return ToolResult(ok=False, error=f"patch {i}: anchor not found in {path.name}")
+            if count > 1 and not block.get("replace_all"):
+                return ToolResult(ok=False, error=f"patch {i}: anchor ambiguous in {path.name} ({count} matches)")
+            new = str(block.get("new", ""))
+            buffers[path] = current.replace(old, new) if block.get("replace_all") else current.replace(old, new, 1)
+        for path, text in buffers.items():  # all validated above -> commit as one unit
+            path.write_text(text, encoding="utf-8")
+        return ToolResult(ok=True,
+                          content=f"applied {len(blocks)} patch(es) across {len(buffers)} file(s)",
+                          meta={"patches": len(blocks), "files": len(buffers)})
+
+    @reg.tool(
+        "read_range",
+        "Read a 1-indexed line range from a UTF-8 file (cheaper than a whole-file read).",
+        schema={"path": "string", "start": "integer", "end": "integer"},
+    )
+    def read_range(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+        path = _resolve(ctx.workspace, args.get("path", ""))
+        if not path.is_file():
+            return ToolResult(ok=False, error=f"not a file: {path}")
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        s = max(1, int(args.get("start", 1)))
+        e = min(len(lines), int(args.get("end", len(lines))))
+        if not lines or s > e:
+            return ToolResult(ok=False, error=f"empty range {s}-{e} (file has {len(lines)} lines)")
+        body = "\n".join(f"{i}\t{lines[i - 1]}" for i in range(s, e + 1))
+        return ToolResult(ok=True, content=body, meta={"lines": len(lines), "start": s, "end": e})
+
+    @reg.tool(
+        "file_outline",
+        "List top-level symbols (def/class signatures) of a source file without reading it whole.",
+        schema={"path": "string"},
+    )
+    def file_outline(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+        import re as _re
+
+        path = _resolve(ctx.workspace, args.get("path", ""))
+        if not path.is_file():
+            return ToolResult(ok=False, error=f"not a file: {path}")
+        pattern = _re.compile(r"^(\s*)(?:async\s+)?(def|class)\s+([A-Za-z_]\w*)")
+        out: list[str] = []
+        for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+            match = pattern.match(line)
+            if match:
+                indent = len(match.group(1)) // 4
+                out.append(f"{number}\t{'  ' * indent}{match.group(2)} {match.group(3)}")
+                if len(out) >= 200:
+                    break
+        return ToolResult(ok=True, content="\n".join(out) or "(no symbols found)", meta={"symbols": len(out)})
+
+    @reg.tool(
         "shell_exec",
         "Run a shell command. Denied outright for OS-escape programs.",
         read_only=False,
