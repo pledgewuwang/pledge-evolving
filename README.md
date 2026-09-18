@@ -17,7 +17,7 @@
 新命令：
 
 ```bash
-python run.py evolution stats                # 候选池与账本概览
+python run.py evolution stats                # 候选池与账本概览（默认读 ~/.forge；看仓库自带数据用 --home .）
 python run.py evolution observe "以后都用中文写报告" --nominate
 python run.py evolution approve <id> && python run.py evolution apply <id>
 python run.py evolution rollback <id>        # 可逆
