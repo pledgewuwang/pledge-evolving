@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planet Evolving — 交付客户端</title>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2128;--panel3:#21262d;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#79c0ff;--ok:#3fb950;--warn:#d29922;--err:#f85149;--purple:#bc8cff;--r:8px}
+*{box-sizing:border-box;margin:0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+body{font:13px/1.55 "Segoe UI","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--text);
+  display:grid;grid-template-columns:300px 1fr 360px;grid-template-rows:48px 1fr;height:100vh;overflow:hidden}
+button{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;transition:all .12s}
+button:hover{background:var(--panel3);border-color:#444c56}
+button.primary{background:#1f6feb;border-color:#1f6feb;color:#fff;font-weight:600}
+button.primary:hover{background:#388bfd}
+button.primary:disabled{opacity:.45;cursor:not-allowed}
+button.danger{background:#da3633;border-color:#da3633;color:#fff}
+button.danger:hover{background:#f85149}
+button.sm{padding:4px 10px;font-size:11px}
+select,input[type=number]{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;width:100%}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
+
+/* ── header ── */
+header{grid-column:1/4;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--border)}
+header .logo{font-weight:700;font-size:15px;white-space:nowrap}
+header .logo em{color:var(--accent);font-style:normal}
+header .ver{font-size:10px;color:var(--muted);background:var(--panel2);padding:2px 6px;border-radius:6px}
+header .nav{display:flex;gap:2px;margin-left:16px}
+header .nav button{background:transparent;border:none;font-size:12px;color:var(--muted);padding:5px 10px;border-radius:6px}
+header .nav button.active{color:var(--text);background:var(--panel2)}
+header .conn{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+header .conn .dot{width:7px;height:7px;border-radius:50%;background:var(--err)}
+header .conn.up .dot{background:var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── left sidebar ── */
+aside{background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+aside .scroll{flex:1;overflow-y:auto;padding:10px 12px}
+.tab-panel{display:none;flex:1;overflow:hidden;flex-direction:column}
+.tab-panel.active{display:flex}
+
+/* collapsible section */
+.section{margin-bottom:6px}
+.section-head{display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);transition:background .12s;user-select:none}
+.section-head:hover{background:var(--panel2)}
+.section-head .arrow{font-size:10px;transition:transform .2s;width:12px;text-align:center}
+.section-head.open .arrow{transform:rotate(90deg)}
+.section-head .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.section-body{display:none;padding:0 4px 8px 10px}
+.section-body.open{display:block}
+.section-body .field{margin-bottom:8px}
+
+/* model cards */
+.model-item{border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:all .12s}
+.model-item:hover{border-color:var(--accent);background:rgba(88,166,255,.04)}
+.model-item.sel{border-color:var(--accent);background:rgba(88,166,255,.1);box-shadow:0 0 0 1px var(--accent)}
+.model-item .name{font-weight:600;font-size:12px;display:flex;align-items:center;gap:6px}
+.tier{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:600}
+.tier.economy{color:var(--ok);border:1px solid var(--ok);background:rgba(63,185,80,.1)}
+.tier.standard{color:var(--accent);border:1px solid var(--accent);background:rgba(88,166,255,.08)}
+.tier.premium{color:var(--warn);border:1px solid var(--warn);background:rgba(210,153,34,.1)}
+.model-item .meta{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4}
+.key-status{font-size:10px}.key-status.ok{color:var(--ok)}.key-status.missing{color:var(--err)}
+
+/* ── main ── */
+main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.task-box{padding:12px 14px;background:var(--panel);border-bottom:1px solid var(--border)}
+textarea#task{width:100%;height:72px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;font:12px/1.5 "Cascadia Code",Consolas,monospace;resize:vertical}
+.task-actions{display:flex;gap:6px;margin-top:8px;align-items:center}
+.task-actions .run-state{font-size:11px;color:var(--muted);margin-left:auto}
+.stream{flex:1;overflow-y:auto;padding:12px 14px}
+.msg{border-left:3px solid var(--border);padding:8px 12px;margin-bottom:8px;background:var(--panel);border-radius:0 var(--r) var(--r) 0}
+.msg.tool{border-left-color:var(--warn)}
+.msg.assistant{border-left-color:var(--accent)}
+.msg.error{border-left-color:var(--err)}
+.msg.cancelled{border-left-color:var(--muted);opacity:.6}
+.msg .head{font-size:10px;color:var(--muted);display:flex;gap:6px;align-items:center;margin-bottom:3px}
+.msg .head .idx{background:var(--panel2);border-radius:4px;padding:0 5px;font-family:Consolas;font-size:10px}
+.msg .body{font-size:12px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.final-box{background:var(--panel);border:1px solid var(--accent);border-radius:var(--r);padding:12px;margin:6px 0}
+.final-box h4{font-size:11px;color:var(--accent);margin-bottom:6px;font-weight:600}
+.final-box .body{font-size:12px;white-space:pre-wrap;line-height:1.6}
+.usage-bar{display:flex;gap:14px;padding:8px 14px;background:var(--panel);border-top:1px solid var(--border);font-size:11px;color:var(--muted);flex-shrink:0}
+.usage-bar b{color:var(--text)}
+.empty{color:var(--muted);font-size:11px;text-align:center;padding:30px 12px;line-height:1.7}
+
+/* file browser */
+.file-browser{flex:1;overflow:auto;padding:10px 14px}
+.fb-toolbar{display:flex;gap:6px;align-items:center;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--border)}
+.fb-path{font-family:Consolas;color:var(--accent);font-size:11px}
+.file-item{display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px}
+.file-item:hover{background:var(--panel)}
+.file-item .icon{width:16px;text-align:center;font-size:13px;flex-shrink:0}
+.file-item .fname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-item .fsize{font-size:10px;color:var(--muted);flex-shrink:0}
+.file-content{flex:1;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin:8px 0}
+.file-content pre{font:11px/1.5 Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+.file-content .meta{font-size:10px;color:var(--muted);margin-bottom:6px}
+
+/* history */
+.history-list{flex:1;overflow-y:auto;padding:10px 14px}
+.hist-item{border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:8px;cursor:pointer;transition:border-color .12s}
+.hist-item:hover{border-color:var(--accent)}
+.hist-item .hhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.hist-item .hstate{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600}
+.hstate.done{color:var(--ok);border:1px solid var(--ok);background:rgba(63,185,80,.08)}
+.hstate.error{color:var(--err);border:1px solid var(--err);background:rgba(248,81,73,.08)}
+.hstate.running{color:var(--warn);border:1px solid var(--warn);background:rgba(210,153,34,.08)}
+.hstate.cancelled{color:var(--muted);border:1px solid var(--border)}
+.hist-item .htask{font-size:12px;line-height:1.5;margin-bottom:3px}
+.hist-item .hmeta{font-size:10px;color:var(--muted)}
+
+/* diag */
+.diag{padding:12px;overflow-y:auto}
+.diag .kv{display:flex;gap:8px;border-bottom:1px solid var(--border);padding:5px 0;font-size:12px}
+.diag .kv .k{color:var(--muted);min-width:110px;font-size:11px}
+.diag .kv .v{font-family:Consolas;font-size:11px}
+
+/* ── right panel: delivery ── */
+.right{background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.right h3{padding:12px 14px 8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.deliveries{flex:1;overflow-y:auto;padding:0 12px 12px}
+.deliver-item{border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:8px;background:var(--panel2);transition:border-color .12s}
+.deliver-item:hover{border-color:var(--accent2)}
+.deliver-item .dtype{font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.deliver-item .dname{font-weight:600;font-size:12px;margin:2px 0;word-break:break-all}
+.deliver-item .dmeta{font-size:10px;color:var(--muted)}
+.deliver-item pre{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px;font:10px/1.4 Consolas,monospace;overflow-x:auto;max-height:160px;margin-top:6px}
+.deliver-item .btn-row{display:flex;gap:5px;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Planet <em>Evolving</em></div>
+  <span class="ver">v0.3</span>
+  <div class="nav">
+    <button class="active" data-tab="run" onclick="switchTab('run',this)">执行</button>
+    <button data-tab="files" onclick="switchTab('files',this)">文件</button>
+    <button data-tab="history" onclick="switchTab('history',this)">历史</button>
+    <button data-tab="diag" onclick="switchTab('diag',this)">诊断</button>
+  </div>
+  <div class="conn" id="conn"><span class="dot"></span><span id="connText">连接中…</span></div>
+</header>
+
+<!-- ════ 左栏: 模型 + 所有开关 ════ -->
+<aside>
+  <div class="scroll">
+    <!-- 模型 -->
+    <div class="section">
+      <div class="section-head open" onclick="toggleSection(this)">
+        <span class="arrow">▶</span>
+        <span class="dot" style="background:var(--accent)"></span>
+        模型选择
+      </div>
+      <div class="section-body open" id="modelList">
+        <div class="empty">加载中…</div>
+      </div>
+    </div>
+
+    <!-- 路由策略 -->
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="arrow">▶</span>
+        <span class="dot" style="background:var(--warn)"></span>
+        路由策略
+      </div>
+      <div class="section-body" id="secStrategy">
+        <div class="field">
+          <label>strategy — 模型分档路由</label>
+          <select id="strategy">
+            <option value="">跟随模型</option>
+            <option value="economy">economy — 便宜优先</option>
+            <option value="balanced">balanced — 均衡</option>
+            <option value="premium">premium — 高端优先</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>thinking — 思考档</label>
+          <select id="thinking">
+            <option value="">默认 (off)</option>
+            <option value="off">off — 关闭思考</option>
+            <option value="smart">smart — 智能选择</option>
+            <option value="on">on — 全开思考</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bundle 模式 -->
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="arrow">▶</span>
+        <span class="dot" style="background:var(--purple)"></span>
+        Bundle 模式
+      </div>
+      <div class="section-body" id="secBundle">
+        <div class="field">
+          <label>bundle — 决定工具暴露范围</label>
+          <select id="bundle">
+            <option value="">base — 默认模式 (只读，写需确认)</option>
+            <option value="coding">coding — 编码模式 (工作区内直写)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 权限策略 -->
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="arrow">▶</span>
+        <span class="dot" style="background:var(--err)"></span>
+        权限策略
+      </div>
+      <div class="section-body" id="secPolicy">
+        <div class="field">
+          <label>mode — 工具调用审批策略</label>
+          <select id="policyMode">
+            <option value="">跟随 bundle 默认</option>
+            <option value="auto">auto — 全部自动</option>
+            <option value="acceptEdits">acceptEdits — 写操作需确认</option>
+            <option value="full-auto">full-auto — 全自动 (危险)</option>
+            <option value="readonly">readonly — 只读</option>
+          </select>
+        </div>
+        <div class="field">
+          <label style="font-size:10px;color:var(--muted);margin-top:4px">
+            allow / ask / deny — 工具列表
+            <span style="font-size:10px;color:var(--accent)">(见 base.json)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 执行循环限制 -->
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="arrow">▶</span>
+        <span class="dot" style="background:var(--ok)"></span>
+        执行循环
+      </div>
+      <div class="section-body" id="secLoop">
+        <div class="field">
+          <label>maxSteps — 最大步数</label>
+          <input type="number" id="maxSteps" value="" placeholder="默认 12" min="1" max="200">
+        </div>
+        <div class="field">
+          <label>maxDepth — 最大子代理深度</label>
+          <input type="number" id="maxDepth" value="" placeholder="默认 2" min="1" max="10">
+        </div>
+        <div class="field">
+          <label>spawnBudget — 子代理预算</label>
+          <input type="number" id="spawnBudget" value="" placeholder="默认 8" min="1" max="50">
+        </div>
+      </div>
+    </div>
+
+    <!-- Provider 凭据 -->
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="arrow">▶</span>
+        <span class="dot" style="background:#3fb950"></span>
+        Provider 凭据
+      </div>
+      <div class="section-body" id="secKeys">
+        <div id="keyList"><div class="empty">加载中…</div></div>
+      </div>
+    </div>
+
+    <!-- 环境诊断 -->
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="arrow">▶</span>
+        <span class="dot" style="background:var(--muted)"></span>
+        内核配置
+      </div>
+      <div class="section-body" id="secConfig">
+        <div id="configView"><div class="empty">加载中…</div></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════ 主栏 ════ -->
+<main>
+  <div class="tab-panel active" id="tab-run">
+    <div class="task-box">
+      <textarea id="task" placeholder="输入任务描述&#10;例如：写一个 HTML 页面展示 forge 的架构，保存到 outputs/"></textarea>
+      <div class="task-actions">
+        <button class="primary" id="runBtn" onclick="startRun()">执 行</button>
+        <button class="danger sm" id="cancelBtn" onclick="cancelRun()" style="display:none">取消</button>
+        <span class="run-state" id="runState">就绪</span>
+      </div>
+    </div>
+    <div class="stream" id="stream"><div class="empty">执行流实时显示<br>每一步工具调用与决策</div></div>
+    <div class="usage-bar" id="usage" style="display:none">
+      <span>tokens <b id="uTok">0</b></span>
+      <span>steps <b id="uStep">0</b></span>
+      <span>耗时 <b id="uTime">0s</b></span>
+      <span>模型 <b id="uModel">—</b></span>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-files">
+    <div class="fb-toolbar">
+      <button class="sm" onclick="loadFiles('')">根</button>
+      <span class="fb-path" id="fbPath">/</span>
+    </div>
+    <div style="display:flex;flex:1;overflow:hidden">
+      <div class="file-browser" id="fileList" style="width:38%;min-width:180px;border-right:1px solid var(--border)"></div>
+      <div style="flex:1;display:flex;flex-direction:column;padding:8px"><div class="file-content" id="fileContent"><div class="empty">点击文件查看内容</div></div></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-history">
+    <div class="history-list" id="historyList"><div class="empty">加载中…</div></div>
+  </div>
+  <div class="tab-panel" id="tab-diag">
+    <div class="diag" id="diagPanel">加载中…</div>
+  </div>
+</main>
+
+<!-- ════ 右栏: 交付面板 ════ -->
+<div class="right">
+  <h3>交付面板</h3>
+  <div class="deliveries" id="deliveries"><div class="empty">交付物会出现在这里<br>运行中实时更新</div></div>
+</div>
+
+<script>
+let models=[],selModel=null,curRunId=null,evtSource=null;
+
+// ── 折叠面板 ──
+function toggleSection(head){
+  head.classList.toggle('open');
+  const body=head.nextElementSibling;
+  body.classList.toggle('open');
+  if(body.classList.contains('open') && body.id==='secKeys') loadKeys();
+  if(body.classList.contains('open') && body.id==='secConfig') loadConfig();
+}
+function toggleAll(open){document.querySelectorAll('.section-head').forEach(h=>{if(open)h.classList.add('open');else h.classList.remove('open');const b=h.nextElementSibling;if(open)b.classList.add('open');else b.classList.remove('open')})}
+
+// ── tabs ──
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('header .nav button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='history')loadHistory();
+  if(name==='files')loadFiles('');
+  if(name==='diag')loadDiag();
+}
+
+// ── API ──
+async function api(path,opts){const r=await fetch(path,opts);if(!r.ok&&r.status!==202)throw new Error(await r.text());return r.json()}
+
+// ── boot ──
+async function boot(){
+  try{
+    const data=await api('/api/models');
+    models=data.models;
+    document.getElementById('conn').classList.add('up');
+    document.getElementById('connText').textContent='已连接 · 内核就绪';
+    renderModels();loadHistory();loadConfig();loadKeys();
+  }catch(e){document.getElementById('connText').textContent='连接失败'}
+}
+
+// ── models ──
+function renderModels(){
+  const el=document.getElementById('modelList');el.innerHTML='';
+  models.forEach(m=>{
+    const d=document.createElement('div');
+    d.className='model-item'+(selModel===m.label?' sel':'');
+    d.onclick=()=>{selModel=(selModel===m.label?null:m.label);renderModels()};
+    d.innerHTML=`<div class="name">${m.label}<span class="tier ${m.tier}">${m.tier}</span></div>
+      <div class="meta"><span class="key-status ${m.keyReady?'ok':'missing'}">${m.keyReady?'● key 就绪':'○ key 缺失'}</span> · ${m.note}</div>`;
+    el.appendChild(d);
+  });
+}
+
+// ── keys ──
+async function loadKeys(){
+  try{
+    const d=await api('/api/diag');
+    const el=document.getElementById('keyList');el.innerHTML='';
+    for(const[k,v] of Object.entries(d.env_status||{})){
+      const d2=document.createElement('div');d2.className='field';
+      d2.innerHTML=`<label class="key-status ${v?'ok':'missing'}">${v?'●':'○'} ${k}</label>`;
+      el.appendChild(d2);
+    }
+  }catch(e){document.getElementById('keyList').innerHTML='<div class="empty">加载失败</div>'}
+}
+
+// ── config snapshot ──
+async function loadConfig(){
+  try{
+    const c=await api('/api/config');
+    const el=document.getElementById('configView');
+    let h='<div style="font-size:11px;color:var(--muted);margin-bottom:6px">base.json 当前配置快照</div>';
+    const sections=[
+      ['policy','权限','mode','sandbox','allow','ask','deny'],
+      ['loop','循环','maxSteps','maxDepth','spawnBudget'],
+      ['model','路由','primary','fallback','moa','strategy'],
+      ['thinking','思考','mode'],
+    ];
+    sections.forEach(([id,label,...keys])=>{
+      const cfg=c[id]||{};
+      h+=`<div style="margin-bottom:6px;font-size:10px;color:var(--accent)">${label}</div>`;
+      keys.forEach(k=>{
+        const v=cfg[k];
+        if(v!==undefined&&v!==null){
+          const txt=Array.isArray(v)?JSON.stringify(v):typeof v==='object'?JSON.stringify(v):String(v);
+          h+=`<div class="kv"><span class="k">${k}</span><span class="v">${esc(txt)}</span></div>`;
+        }
+      });
+    });
+    el.innerHTML=h;
+  }catch(e){document.getElementById('configView').innerHTML='<div class="empty">加载失败</div>'}
+}
+
+// ── run ──
+function collectParams(){
+  const p={};
+  p.model=selModel||null;
+  const s=document.getElementById('strategy').value;p.strategy=s||null;
+  const t=document.getElementById('thinking').value;p.thinking=t||null;
+  const b=document.getElementById('bundle').value;p.bundle=b||null;
+  const pm=document.getElementById('policyMode').value;p.policy_mode=pm||null;
+  const ms=document.getElementById('maxSteps').value;if(ms)p.max_steps=parseInt(ms);
+  const md=document.getElementById('maxDepth').value;if(md)p.max_depth=parseInt(md);
+  const sb=document.getElementById('spawnBudget').value;if(sb)p.spawn_budget=parseInt(sb);
+  return p;
+}
+
+async function startRun(){
+  const task=document.getElementById('task').value.trim();
+  if(!task)return alert('请输入任务');
+  const body={task,...collectParams()};
+  document.getElementById('runBtn').disabled=true;
+  document.getElementById('cancelBtn').style.display='';
+  document.getElementById('runState').textContent='提交中…';
+  document.getElementById('stream').innerHTML='';
+  document.getElementById('deliveries').innerHTML='';
+  document.getElementById('usage').style.display='none';
+  try{
+    const{run_id}=await api('/api/run',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+    curRunId=run_id;listenSSE(run_id);
+  }catch(e){
+    document.getElementById('runState').textContent='失败: '+e.message;
+    document.getElementById('runBtn').disabled=false;
+    document.getElementById('cancelBtn').style.display='none';
+  }
+}
+
+function listenSSE(runId){
+  if(evtSource)evtSource.close();
+  evtSource=new EventSource('/api/run/'+runId+'/events');
+  evtSource.onmessage=(e)=>{
+    let d;try{d=JSON.parse(e.data)}catch{return}
+    if(d.type==='step')appendStep(d);
+    else if(d.type==='state'){
+      document.getElementById('runState').textContent={running:'执行中…',done:'完成',error:'失败',cancelled:'已取消',cancelling:'取消中…'}[d.state]||d.state;
+      if(d.state==='done'){renderFinal(d);renderDelivery(d.delivery||[]);renderUsage(d)}
+      if(d.state==='error')renderError(d);
+      if(d.state==='done'||d.state==='error'||d.state==='cancelled'){
+        document.getElementById('runBtn').disabled=false;document.getElementById('cancelBtn').style.display='none';
+        evtSource.close();evtSource=null;
+      }
+    }
+  };
+  evtSource.onerror=()=>{if(evtSource){evtSource.close();evtSource=null}pollRun(runId)};
+}
+function pollRun(runId){
+  const iv=setInterval(async()=>{
+    try{
+      const r=await api('/api/run/'+runId);renderFromRec(r);
+      if(r.state==='done'||r.state==='error'||r.state==='cancelled'){clearInterval(iv);document.getElementById('runBtn').disabled=false;document.getElementById('cancelBtn').style.display='none'}
+    }catch(e){clearInterval(iv)}
+  },1500);
+}
+function renderFromRec(rec){
+  const s=document.getElementById('stream');s.innerHTML='';
+  (rec.steps||[]).forEach(step=>appendStep(step));
+  if(rec.state==='done')renderFinal({text:rec.text,usage:rec.usage,delivery:rec.delivery});
+  if(rec.state==='error')renderError({error:rec.error,traceback:rec.traceback});
+  if(rec.state==='cancelled'){const d=document.createElement('div');d.className='msg cancelled';d.innerHTML='<div class="head">已取消</div>';s.appendChild(d)}
+  renderDelivery(rec.delivery||[]);renderUsage(rec);
+  document.getElementById('runState').textContent={running:'执行中…',done:'完成',error:'失败',cancelled:'已取消'}[rec.state]||rec.state;
+}
+function appendStep(s){
+  const d=document.createElement('div');d.className='msg tool';
+  d.innerHTML=`<div class="head"><span class="idx">${s.index}</span>${esc(s.tool||'reason')} → ${esc(s.decision||'')}</div><div class="body">${esc(s.note||s.result||'')}</div>`;
+  document.getElementById('stream').appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function renderFinal(d){if(!d.text)return;const b=document.createElement('div');b.className='final-box';b.innerHTML=`<h4>最终回复</h4><div class="body">${esc(d.text)}</div>`;document.getElementById('stream').appendChild(b);b.scrollIntoView({behavior:'smooth',block:'end'})}
+function renderError(d){const b=document.createElement('div');b.className='msg error';b.innerHTML=`<div class="head">错误</div><div class="body">${esc(d.error||'')}${d.traceback?'\n\n'+esc(d.traceback):''}</div>`;document.getElementById('stream').appendChild(b)}
+function renderUsage(d){if(!d.usage)return;const bar=document.getElementById('usage');bar.style.display='flex';document.getElementById('uTok').textContent=(d.usage&&d.usage.total_tokens)||'—';document.getElementById('uStep').textContent=d.steps?d.steps.length:'—';const s=d.finished&&d.created?Math.max(0,Math.round(d.finished-d.created)):0;document.getElementById('uTime').textContent=s+'s';document.getElementById('uModel').textContent=d.model||selModel||'—'}
+function renderDelivery(items){const dl=document.getElementById('deliveries');dl.innerHTML='';if(!items||!items.length){dl.innerHTML='<div class="empty">本次无独立交付文件</div>';return}items.forEach(item=>{const d=document.createElement('div');d.className='deliver-item';if(item.kind==='file'){d.innerHTML=`<div class="dtype">${esc(item.ext||'file')}</div><div class="dname">${esc(item.path)}</div><div class="dmeta">${fmtSize(item.size)} · ${fmtTime(item.mtime)}</div><div class="btn-row"><button class="sm" data-vpath="${escAttr(item.path)}">查看</button></div>`}else{d.innerHTML=`<div class="dtype">代码 · ${esc(item.lang)}</div><pre>${esc(item.preview)}</pre>`}dl.appendChild(d)});dl.addEventListener('click',e=>{const btn=e.target.closest('[data-vpath]');if(btn)viewFile(btn.dataset.vpath)})}
+async function cancelRun(){if(!curRunId)return;try{await api('/api/run/'+curRunId+'/cancel',{method:'POST'})}catch(e){}}
+
+// ── history ──
+async function loadHistory(){try{const{runs}=await api('/api/run');const el=document.getElementById('historyList');el.innerHTML='';if(!runs.length){el.innerHTML='<div class="empty">暂无历史</div>';return}runs.forEach(r=>{const d=document.createElement('div');d.className='hist-item';d.onclick=()=>{curRunId=r.id;switchTab('run',document.querySelector('[data-tab=run]'));renderFromRec(r)};d.innerHTML=`<div class="hhead"><span class="hstate ${r.state}">${r.state}</span><span style="font-size:10px;color:var(--muted)">${fmtTime(r.created)}</span></div><div class="htask">${esc(r.task)}</div><div class="hmeta">${r.model||'auto'} · ${r.bundle||'base'} · ${(r.steps||[]).length} steps</div>`;el.appendChild(d)})}catch(e){}}
+
+// ── files ──
+async function loadFiles(sub){try{const{files}=await api('/api/files'+(sub?'?path='+encodeURIComponent(sub):''));const el=document.getElementById('fileList');el.innerHTML='';if(!files.length){el.innerHTML='<div class="empty">空目录</div>';return}files.forEach(f=>{const d=document.createElement('div');d.className='file-item';if(f.type==='dir'){d.innerHTML=`<span class="icon">📁</span><span class="fname">${esc(f.name)}</span>`;d.onclick=()=>loadFiles(f.path)}else{d.innerHTML=`<span class="icon">${esc({'.py':'🐍','.js':'📜','.html':'📄','.md':'📝','.json':'📦'}[f.ext]||'📎')}</span><span class="fname">${esc(f.name)}</span><span class="fsize">${fmtSize(f.size)}</span>`;d.onclick=()=>viewFile(f.path)}el.appendChild(d)})}catch(e){document.getElementById('fileList').innerHTML='<div class="empty">失败</div>'}}
+async function viewFile(path){const el=document.getElementById('fileContent');try{const r=await api('/api/file?path='+encodeURIComponent(path));if(r.error){el.innerHTML=`<div class="empty">${esc(r.error)}</div>`;return}if(r.binary){el.innerHTML=`<div class="empty">二进制 ${fmtSize(r.size)}</div>`;return}el.innerHTML=`<div class="meta">${esc(r.path)} · ${fmtSize(r.size)}</div><pre>${esc(r.text)}</pre>`}catch(e){el.innerHTML='<div class="empty">失败</div>'}}
+
+// ── diag ──
+async function loadDiag(){try{const d=await api('/api/diag');const el=document.getElementById('diagPanel');let h='';h+=kv('forge home',d.forge_home);h+=kv('keys.json',d.keys_exists?'✅ 存在':'❌ 缺失');h+=kv('workspace',d.workspace);h+=kv('version',d.forge_version);h+='<div style="margin:12px 0 6px;font-size:11px;color:var(--muted)">KEY 注入</div>';for(const[k,v]of Object.entries(d.env_status||{})){h+=kv(k,v?'✅':'❌')}el.innerHTML=h}catch(e){document.getElementById('diagPanel').innerHTML='失败'}}
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function escAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function fmtSize(n){return n>1048576?(n/1048576).toFixed(1)+' MB':n>1024?(n/1024).toFixed(1)+' KB':n+' B'}
+function fmtTime(t){return t?new Date(t*1000).toLocaleString():''}
+function kv(k,v){return `<div class="kv"><span class="k">${esc(k)}</span><span class="v">${esc(String(v))}</span></div>`}
+
+boot();
+// 点击折叠面板任意标题栏展开全部
+document.addEventListener('keydown',e=>{if(e.key==='`')toggleAll(document.querySelector('.section-head').classList.contains('open')?false:true)});
+</script>
+</body>
+</html>
