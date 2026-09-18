@@ -379,11 +379,19 @@ def cmd_modules(args) -> int:
             for warning in warns:
                 print(f"  [warn] {module:<22} {warning}")
     elif args.action == "selftests":
+        report = registry.report()
+        rows = registry.run_selftests()
         failed = 0
-        for module, name, passed, detail in registry.run_selftests():
+        for module, name, passed, detail in rows:
             failed += int(not passed)
             print(f"  [{'pass' if passed else 'FAIL'}] {module}:{name}" + (f"  ({detail})" if detail and not passed else ""))
-        print(f"{len(registry.run_selftests()) - failed} passed, {failed} failed")
+        # 被隔离模块此前在这里静默消失——只跑本命令的人会看到假绿灯。
+        # 点名 skip（原因与 validate 的 [FAIL] 行同源），不再无痕排除。
+        skipped = len(report["quarantined"])
+        for row in report["quarantined"]:
+            print(f"  [skip] {row['name']:<22} {row['problems']}")
+        tail = f", {skipped} skipped" if skipped else ""
+        print(f"{len(rows) - failed} passed, {failed} failed{tail}")
     return 0
 
 
