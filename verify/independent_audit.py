@@ -179,7 +179,7 @@ def section_evidence(reg) -> None:
 EXPLOIT_SUFFIX = '''
 
 # --- verifier injection: 模拟"作者交了空自检" ---
-def _self_test() -> List[str]:
+def selftest() -> List[str]:
     """verifier: 一个什么都不检查的空测试。"""
     return []
 '''
