@@ -22,9 +22,9 @@ python run.py evolution observe "以后都用中文写报告" --nominate
 python run.py evolution approve <id> && python run.py evolution apply <id>
 python run.py evolution rollback <id>        # 可逆
 python run.py evolution curate               # 归档过期候选（不删除）
-python run.py federation roster              # 本机七家 worker 的能力/成本/权限档
-python run.py gateway --upstream https://api.xiaomimimo.com/v1 --upstream-wire openai \
-    --model-map claude-sonnet-5=mimo-v2.5 --models claude-sonnet-5 --key $KEY
+python run.py federation roster              # worker 队列的能力/成本/权限档（从 home 的 federation.json 读取）
+python run.py gateway --upstream https://api.example.com/v1 --upstream-wire openai \
+    --model-map claude-sonnet-5=<upstream-model> --models claude-sonnet-5 --key $KEY
 ```
 
 ### 自我进化的四条硬规矩

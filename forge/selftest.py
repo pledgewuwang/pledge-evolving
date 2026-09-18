@@ -1873,7 +1873,9 @@ def test_global_optimizations() -> None:
 
     # F4-4/F4-5 文档对齐（3.2）：readme 已知边界必须显式写明读侧不受沙箱
     # 约束与 allow 恒高于 mode 基线，防止表述回退（repo 形态下守卫）
-    readme_path = Path(__file__).resolve().parent.parent / "readme.md"
+    _root = Path(__file__).resolve().parent.parent
+    readme_path = next((p for p in (_root / "README.md", _root / "readme.md") if p.is_file()),
+                       _root / "README.md")
     if readme_path.is_file():
         readme_text = readme_path.read_text(encoding="utf-8")
         check("global:readme-documents-read-side-boundary",

@@ -1,0 +1,11 @@
+[
+  {
+    "name": "example-cli",
+    "argv": ["example-agent.cmd", "-p", "{task}", "--output-format", "text"],
+    "cost": "cheap",
+    "permission": "read-only",
+    "capabilities": ["code", "review"],
+    "timeout_s": 900,
+    "notes": "示例 worker：把 argv[0] 换成你的 CLI 可执行文件；{task} 会被替换成任务正文。cwd / env / 其余字段可省略。"
+  }
+]

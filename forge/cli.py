@@ -349,6 +349,9 @@ def cmd_federation(args) -> int:
             mark = "up  " if row["available"] else "down"
             print(f"[{mark}] {row['name']:<14} cost={row['cost']:<9} perm={row['permission']:<16} "
                   f"caps={','.join(row['capabilities'])}")
+        if not fed.workers:
+            print("(no workers declared — add <home>/federation.json; "
+                  "see templates/federation.example.json)")
     elif args.action == "report":
         print(json.dumps(fed.report(), ensure_ascii=False, indent=2))
     return 0

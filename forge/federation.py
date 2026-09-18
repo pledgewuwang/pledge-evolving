@@ -351,67 +351,27 @@ class Federation:
 
 
 # ---------------------------------------------------------------------------
-# the machine's actual fleet
+# default fleet (declared via <home>/federation.json)
 # ---------------------------------------------------------------------------
 
-NPM_BIN = str(Path.home() / "AppData" / "Roaming" / "npm")
-NODE = r"C:\Program Files\nodejs\node.exe"
-
-
 def default_fleet(home: Path, *, workspace: str = "", claude_settings: dict[str, str] | None = None) -> Federation:
-    """Declare the workers actually present on this machine."""
-    fed = Federation(home=home)
-    node_bin = str(Path.home() / "AppData" / "Roaming" / "npm" / "node_modules")
-    workbuddy_cli = str(Path.home() / "AppData" / "Local" / "Programs" / "WorkBuddyAI" /
-                         "resources" / "app.asar.unpacked" / "cli" / "bin" / "codebuddy")
-    hermes = r"C:\Program Files\AutoClaw\resources\python\Scripts\hermes.exe"
-    env_path = {"PATH": NPM_BIN + ";" + str(Path.home() / "AppData" / "Roaming" / "npm")}
+    """Build the worker fleet from the user's local roster file.
 
-    fed.register(WorkerSpec(
-        name="opencode", argv=[f"{NPM_BIN}\\opencode.cmd", "run", "--model", "deepseek/deepseek-v4-flash", "{task}"],
-        cwd=workspace, env=env_path, cost="cheap", permission="workspace-write",
-        capabilities=("code", "long-context", "local-evidence"),
-        notes="sandbox rejects reads outside cwd — stage evidence inside the workspace",
-        sandbox_note="external_directory auto-reject",
-    ))
-    fed.register(WorkerSpec(
-        name="claude", argv=[f"{NPM_BIN}\\claude.cmd", "-p", "{task}", "--output-format", "text"],
-        cwd=workspace, env=env_path, cost="cheap", permission="read-only",
-        capabilities=("code-review", "long-context", "bounded-output"),
-        notes="pointed at the MiMo lane via --settings; use the premium lane only for review",
-    ))
-    fed.register(WorkerSpec(
-        name="claude-review", argv=[f"{NPM_BIN}\\claude.cmd", "-p", "{task}", "--output-format", "text",
-                                    "--settings", str(home / "settings-review.json")],
-        cwd=workspace, env=env_path, cost="premium", permission="read-only",
-        capabilities=("code-review", "big-call"), max_attempts=1,
-        notes="Claude lane — reserve for expensive review passes",
-    ))
-    fed.register(WorkerSpec(
-        name="workbuddy", argv=[NODE, workbuddy_cli, "-p", "{task}", "--model", "deepseek-v4.1-flash",
-                                "--permission-mode", "bypassPermissions"],
-        cwd=workspace, cost="free", permission="full-access",
-        capabilities=("code", "docs", "wide-tools"), timeout_s=1200,
-        notes="WorkBuddyAI client; the Program Files\\WorkBuddy client ships no CLI",
-    ))
-    fed.register(WorkerSpec(
-        name="dsh", argv=[f"{NPM_BIN}\\dsh.cmd", "--profile", "headless", "{task}"],
-        cwd=workspace, env=env_path, cost="free", permission="read-only",
-        capabilities=("analysis", "config"),
-    ))
-    fed.register(WorkerSpec(
-        name="hermes", argv=[hermes, "--cli", "--yolo", "-z", "{task}"],
-        cwd=workspace, cost="free", permission="workspace-write",
-        capabilities=("analysis", "self-iteration", "ops"), timeout_s=1200,
-    ))
-    fed.register(WorkerSpec(
-        name="pi", argv=[f"{NPM_BIN}\\pi.cmd", "-p", "{task}", "--provider", "anthropic",
-                         "--model", "claude-sonnet-5"],
-        cwd=workspace, env={**env_path, "ANTHROPIC_BASE_URL": "http://127.0.0.1:8810",
-                            "ANTHROPIC_AUTH_TOKEN": "mimo-lane"},
-        cost="free", permission="read-only", capabilities=("code",),
-        notes="hosted CLI; non-default providers gate on its own auth — needs a local lane",
-    ))
+    Worker CLIs are machine-specific, so the framework ships no hardcoded
+    roster: declare workers in ``<home>/federation.json`` (see
+    ``templates/federation.example.json`` for the shape). Without that file
+    the fleet is simply empty.
+    """
+    fed = Federation(home=home)
+    roster_file = Path(home) / "federation.json"
+    if not roster_file.is_file():
+        return fed
+    for entry in json.loads(roster_file.read_text(encoding="utf-8")):
+        data = dict(entry)
+        data.setdefault("cwd", workspace)
+        if "capabilities" in data:
+            data["capabilities"] = tuple(data["capabilities"])
+        fed.register(WorkerSpec(**data))
     return fed
 
 

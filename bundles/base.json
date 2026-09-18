@@ -50,7 +50,7 @@
       "apiKey": { "$expr": "get('env.FORGE_DEEPSEEK_KEY', '')" },
       "model": "deepseek-flash",
       "smallModel": "deepseek-flash",
-      "notes": "主力档：额度充裕，日常与重活都吃这一档"
+      "notes": "默认 provider：官方 OpenAI 兼容接口；凭据由环境变量注入（FORGE_DEEPSEEK_KEY），不落盘、不进日志。"
     }
   },
   {
@@ -59,9 +59,9 @@
     "config": {
       "wire": "anthropic",
       "baseURL": "http://127.0.0.1:8810",
-      "apiKey": "local-gateway",
+      "apiKey": { "$expr": "get('env.FORGE_MIMO_KEY', 'local')" },
       "model": "claude-sonnet-5",
-      "notes": "备用档：小米 MiMo，经本机环回网关做协议翻译"
+      "notes": "示例 provider：本地环回协议翻译网关（需自备；端口与上游映射按你的网关调整，不用可整段删除）。"
     }
   },
   {
@@ -70,9 +70,9 @@
     "config": {
       "wire": "anthropic",
       "baseURL": "http://127.0.0.1:8811",
-      "apiKey": "local-gateway",
+      "apiKey": { "$expr": "get('env.FORGE_REVIEW_KEY', 'local')" },
       "model": "claude-opus-5",
-      "notes": "审查档：只在大问题与关键判断上使用"
+      "notes": "示例 provider：独立审查通道；示例指向本地网关，按需替换为你自己的高成本档。"
     }
   }
 ]

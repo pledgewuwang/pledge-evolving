@@ -19,7 +19,7 @@
       "baseURL": "http://127.0.0.1:8810",
       "apiKey": { "$expr": "get('env.FORGE_MIMO_KEY', 'local')" },
       "model": "claude-sonnet-5",
-      "notes": "备用档示例：本机环回协议翻译网关时，凭据通常无所谓，但同样走 $expr 保持一致口径。"
+      "notes": "备用档示例：本地环回协议翻译网关时，凭据通常无所谓，但同样走 $expr 保持一致口径。"
     }
   },
   {

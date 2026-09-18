@@ -27,15 +27,15 @@ from typing import Any, Iterable
 #   loop._pricing_scale 取宽松解释（未知价 = 不放宽预算，返回 1.0 地板）。
 #   两处都已注释回指本表；改语义先改这里。
 EFFECTIVE_RATES: dict[str, tuple[str, float, str]] = {
-    "deepseek-flash": ("CNY", 0.1595, "由 2026-09-14 账单反推：¥203.00 / 1,273,002,379 tok"),
+    "deepseek-flash": ("CNY", 0.1595, "由 2026-09-14 账单反推（金额从略）"),
     "deepseek-v4-pro": ("CNY", 0.1595, "同上账单未拆分模型，暂共用同一有效单价"),
-    "mimo-v2.5": ("CNY", 0.0754, "由 2026-09-14 账单反推：¥48.00 / 636,744,162 tok"),
+    "mimo-v2.5": ("CNY", 0.0754, "由 2026-09-14 账单反推（金额从略）"),
     "mimo-v2.5-pro": ("CNY", 0.0754, "同上账单未拆分型号，暂共用同一有效单价"),
-    # R1-1：claude-sonnet-5 在本机 forge 语境 = 8810 环回网关的广告名，网关
+    # R1-1：claude-sonnet-5 在 forge 语境 = 环回网关的广告名，网关
     # 把它翻译成 mimo-v2.5 上游（gateway --model-map claude-sonnet-5=mimo-v2.5），
-    # 上面那条 MiMo 账单正是经此链路产生的 → 有效单价同 mimo。0.0（审查档按次
+    # 上面那条账单正是经此链路产生的 → 有效单价同 mimo。0.0（审查档按次
     # 计费）只适用于 claude-opus-5 这类真审查档。
-    "claude-sonnet-5": ("CNY", 0.0754, "8810 网关广告名，翻译到 mimo-v2.5 上游；同 MiMo 账单反推"),
+    "claude-sonnet-5": ("CNY", 0.0754, "环回网关广告名，翻译到 mimo-v2.5 上游；同 MiMo 账单反推"),
     "claude-opus-5": ("CNY", 0.0, "审查档：按次调用，未纳入有效单价统计"),
 }
 
