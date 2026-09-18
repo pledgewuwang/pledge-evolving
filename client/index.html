@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -492,8 +492,8 @@ function appendStep(s){
   document.getElementById('stream').appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});
 }
 function renderFinal(d){if(!d.text)return;const b=document.createElement('div');b.className='final-box';b.innerHTML=`<h4>最终回复</h4><div class="body">${esc(d.text)}</div>`;document.getElementById('stream').appendChild(b);b.scrollIntoView({behavior:'smooth',block:'end'})}
-function renderError(d){const b=document.createElement('div');b.className='msg error';b.innerHTML=`<div class="head">错误</div><div class="body">${esc(d.error||'')}${d.traceback?'\n\n'+esc(d.traceback):''}</div>`;document.getElementById('stream').appendChild(b)}
-function renderUsage(d){if(!d.usage)return;const bar=document.getElementById('usage');bar.style.display='flex';document.getElementById('uTok').textContent=(d.usage&&d.usage.total_tokens)||'—';document.getElementById('uStep').textContent=d.steps?d.steps.length:'—';const s=d.finished&&d.created?Math.max(0,Math.round(d.finished-d.created)):0;document.getElementById('uTime').textContent=s+'s';document.getElementById('uModel').textContent=d.model||selModel||'—'}
+function renderError(d){const b=document.createElement('div');b.className='msg error';b.innerHTML=`<div class="head">错误</div><div class="body">${esc(d.error||'')}${d.traceback?'\n\n'+esc(d.traceback.slice(0,800)):''}</div>`;document.getElementById('stream').appendChild(b)}
+function renderUsage(d){if(!d.usage)return;const bar=document.getElementById('usage');bar.style.display='flex';document.getElementById('uTok').textContent=d.usage&&d.usage.total_tokens!==undefined?d.usage.total_tokens:'—';document.getElementById('uStep').textContent=d.steps?d.steps.length:'—';const s=d.finished&&d.created?Math.max(0,Math.round(d.finished-d.created)):0;document.getElementById('uTime').textContent=s+'s';document.getElementById('uModel').textContent=d.model||selModel||'—'}
 function renderDelivery(items){const dl=document.getElementById('deliveries');dl.innerHTML='';if(!items||!items.length){dl.innerHTML='<div class="empty">本次无独立交付文件</div>';return}items.forEach(item=>{const d=document.createElement('div');d.className='deliver-item';if(item.kind==='file'){d.innerHTML=`<div class="dtype">${esc(item.ext||'file')}</div><div class="dname">${esc(item.path)}</div><div class="dmeta">${fmtSize(item.size)} · ${fmtTime(item.mtime)}</div><div class="btn-row"><button class="sm" data-vpath="${escAttr(item.path)}">查看</button></div>`}else{d.innerHTML=`<div class="dtype">代码 · ${esc(item.lang)}</div><pre>${esc(item.preview)}</pre>`}dl.appendChild(d)});dl.addEventListener('click',e=>{const btn=e.target.closest('[data-vpath]');if(btn)viewFile(btn.dataset.vpath)})}
 async function cancelRun(){if(!curRunId)return;try{await api('/api/run/'+curRunId+'/cancel',{method:'POST'})}catch(e){}}
 

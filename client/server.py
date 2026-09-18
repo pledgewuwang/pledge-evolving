@@ -40,6 +40,14 @@ if str(ROOT) not in sys.path:
 FORGE_HOME = Path.home() / ".forge"
 KEYS_FILE = FORGE_HOME / "keys.json"
 _CANCEL_FLAGS: dict[str, bool] = {}
+
+# ── Constants ──────────────────────────────────────────────────────────────
+MAX_PAYLOAD_BYTES    = 1_048_576   # 1 MB POST body cap
+STORE_CLEAN_INTERVAL = 600         # seconds between cleanup runs
+SSE_DEADLINE_SECS    = 600
+SSE_POLL_INTERVAL    = 0.8        # seconds between SSE polls
+RUN_ID_RE = re.compile(r"^[0-9a-f]{12}$")  # hex-12 run IDs from uuid4
+
 ROOT.mkdir(parents=True, exist_ok=True)
 (ROOT / "workspace").mkdir(parents=True, exist_ok=True)
 
@@ -182,9 +190,6 @@ DELIVERY_DIRS = ("outputs", "deliveries", "reports", "dist", "build")
 DELIVERY_EXT = {".md", ".html", ".txt", ".py", ".js", ".ts", ".json", ".csv",
                 ".png", ".jpg", ".svg", ".pdf", ".docx", ".xlsx", ".pptx", ".zip"}
 FENCE_RE = re.compile(r"```(\w+)?\n(.*?)```", re.S)
-TEXT_FILE_MAX = 500_000
-TREE_DEPTH = 3
-
 
 def scan_delivery(workspace: Path, since: float, report_text: str) -> list[dict]:
     items: list[dict] = []
@@ -418,7 +423,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("connection", "keep-alive")
         self.end_headers()
         idx = 0
-        deadline = time.time() + 600
+        deadline = time.time() + SSE_DEADLINE_SECS
         try:
             while time.time() < deadline:
                 rec = STORE.get(run_id)
@@ -432,7 +437,7 @@ class Handler(BaseHTTPRequestHandler):
                 if rec["state"] in ("done", "error", "cancelled"):
                     self._sse_event({"type": "terminal", "state": rec["state"]})
                     break
-                time.sleep(0.8)
+                time.sleep(SSE_POLL_INTERVAL)
         except (BrokenPipeError, ConnectionResetError):
             pass
 
@@ -440,6 +445,16 @@ class Handler(BaseHTTPRequestHandler):
         payload = json.dumps(data, ensure_ascii=False, default=str)
         self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
         self.wfile.flush()
+
+
+    @staticmethod
+    def _extract_run_id(raw_path: str) -> str | None:
+        parts = raw_path.strip("/").split("/")
+        if len(parts) >= 3 and parts[0] == "api" and parts[1] == "run":
+            candidate = parts[2]
+            if RUN_ID_RE.match(candidate):
+                return candidate
+        return None
 
     def do_GET(self) -> None:
         parsed = urllib.parse.urlparse(self.path)
@@ -466,10 +481,16 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/run":
             self._send_json({"runs": STORE.list_recent(50)})
         elif path.startswith("/api/run/") and path.endswith("/events"):
-            run_id = path.split("/")[3]
+            run_id = self._extract_run_id(path)
+            if not run_id:
+                self._send_json({"error": "invalid run id"}, 400)
+                return
             self._send_sse(run_id)
         elif path.startswith("/api/run/"):
-            run_id = path.split("/")[3]
+            run_id = self._extract_run_id(path)
+            if not run_id:
+                self._send_json({"error": "invalid run id"}, 400)
+                return
             rec = STORE.get(run_id)
             self._send_json(rec if rec else {"error": "run not found"},
                            200 if rec else 404)
@@ -505,13 +526,17 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/run":
             self._handle_start_run()
         elif path.startswith("/api/run/") and path.endswith("/cancel"):
-            self._handle_cancel(path.split("/")[3])
+            rid = self._extract_run_id(path)
+            if not rid:
+                self._send_json({"error": "invalid run id"}, 400)
+                return
+            self._handle_cancel(rid)
         else:
             self._send_json({"error": "not found"}, 404)
 
     def _handle_start_run(self) -> None:
         try:
-            length = int(self.headers.get("content-length", 0))
+            length = min(int(self.headers.get("content-length", 0)), MAX_PAYLOAD_BYTES)
             payload = json.loads(self.rfile.read(length).decode("utf-8"))
         except (ValueError, json.JSONDecodeError):
             self._send_json({"error": "bad json"}, 400)
@@ -522,7 +547,11 @@ class Handler(BaseHTTPRequestHandler):
             return
         load_keys_into_env()
         rec = STORE.create(task)
-        workspace = Path(payload.get("workspace") or (ROOT / "workspace"))
+        raw_ws = payload.get("workspace") or str(ROOT / "workspace")
+        workspace = Path(raw_ws).resolve()
+        if not str(workspace).startswith(str(ROOT.resolve())):
+            self._send_json({"error": "workspace outside project root"}, 400)
+            return
         workspace.mkdir(parents=True, exist_ok=True)
         _CANCEL_FLAGS[rec["id"]] = False
         threading.Thread(
@@ -569,7 +598,7 @@ def main(argv: list[str] | None = None) -> int:
     _scheduler = sched.scheduler(time.time, time.sleep)
     def _periodic_cleanup():
         STORE.cleanup()
-        _scheduler.enter(600, 1, _periodic_cleanup)
+        _scheduler.enter(STORE_CLEAN_INTERVAL, 1, _periodic_cleanup)
     _scheduler.enter(600, 1, _periodic_cleanup)
     threading.Thread(target=_scheduler.run, daemon=True).start()
     try:
