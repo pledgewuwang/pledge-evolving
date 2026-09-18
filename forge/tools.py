@@ -277,7 +277,9 @@ def build_builtin_registry(
     @reg.tool(
         "edit_file",
         "Replace an exact anchor (old -> new) inside a UTF-8 file, or overwrite a "
-        "1-indexed line range. Refuses an absent or ambiguous anchor unless replace_all.",
+        "1-indexed inclusive line range (start defaults to 1, end to the last line). "
+        "Refuses an absent or ambiguous anchor unless replace_all; pass either 'old' "
+        "or a line range, not both.",
         read_only=False,
         schema={"path": "string", "old": "string", "new": "string",
                 "replace_all": "boolean", "start_line": "integer", "end_line": "integer"},
@@ -288,18 +290,36 @@ def build_builtin_registry(
             return ToolResult(ok=False, error=f"not a file: {path}")
         original = path.read_text(encoding="utf-8", errors="replace")
         new = str(args.get("new", ""))
+        old = str(args.get("old", ""))
         start_line, end_line = args.get("start_line"), args.get("end_line")
-        if start_line is not None or end_line is not None:
+        has_range = start_line is not None or end_line is not None
+        if has_range and old:
+            return ToolResult(ok=False,
+                              error="edit_file: pass either 'old' (anchor) or start_line/end_line (range), not both")
+        if has_range:
+            def _line_no(value: Any) -> int | None:
+                if value is None or isinstance(value, bool):
+                    return None
+                if isinstance(value, float) and not value.is_integer():
+                    return None
+                try:
+                    return int(value)
+                except (TypeError, ValueError):
+                    return None
+
+            s = _line_no(start_line) if start_line is not None else 1
+            e = _line_no(end_line) if end_line is not None else None
+            if s is None or (end_line is not None and e is None):
+                return ToolResult(ok=False, error="edit_file: start_line/end_line must be integers")
             lines = original.splitlines(keepends=True)
-            s = int(start_line or 1)
-            e = int(end_line if end_line is not None else len(lines))
+            if e is None:
+                e = len(lines)
             if s < 1 or e < s or e > len(lines):
                 return ToolResult(ok=False, error=f"line range {s}-{e} out of bounds (file has {len(lines)} lines)")
             body = new if (not new or new.endswith("\n")) else new + "\n"
             updated = "".join(lines[: s - 1]) + body + "".join(lines[e:])
             path.write_text(updated, encoding="utf-8")
             return ToolResult(ok=True, content=f"replaced lines {s}-{e} of {path}", meta={"lines": len(lines)})
-        old = str(args.get("old", ""))
         if not old:
             return ToolResult(ok=False, error="edit_file needs 'old' (or start_line/end_line)")
         count = original.count(old)
@@ -318,7 +338,8 @@ def build_builtin_registry(
     @reg.tool(
         "apply_patch",
         "Apply a list of {path, old, new} edits ATOMICALLY: every block is validated "
-        "first, then every file is written; any failed block leaves all files untouched.",
+        "first, then every file is written (per-file atomic replace); a failed "
+        "validation leaves all files untouched.",
         read_only=False,
         schema={"patches": "array"},
     )
@@ -326,11 +347,18 @@ def build_builtin_registry(
         blocks = args.get("patches") or args.get("edits") or []
         if not isinstance(blocks, list) or not blocks:
             return ToolResult(ok=False, error="apply_patch needs a non-empty 'patches' list of {path, old, new}")
+        import os as _os
+        import tempfile as _tempfile
+
         buffers: dict[Path, str] = {}
         for i, block in enumerate(blocks):
             if not isinstance(block, dict):
                 return ToolResult(ok=False, error=f"patch block {i} is not an object")
-            path = _resolve(ctx.workspace, block.get("path", ""))
+            path = _resolve(ctx.workspace, block.get("path", "")).resolve()
+            # defence-in-depth: handler-side sandbox assert. The policy layer also
+            # collects patches[].path, but a write tool must not trust one layer alone.
+            if not ctx.policy.sandbox.allows_write(path, ctx.policy.workspace):
+                return ToolResult(ok=False, error=f"patch {i}: path escapes sandbox: {path}")
             current = buffers.get(path)
             if current is None:
                 if not path.is_file():
@@ -346,11 +374,32 @@ def build_builtin_registry(
                 return ToolResult(ok=False, error=f"patch {i}: anchor ambiguous in {path.name} ({count} matches)")
             new = str(block.get("new", ""))
             buffers[path] = current.replace(old, new) if block.get("replace_all") else current.replace(old, new, 1)
-        for path, text in buffers.items():  # all validated above -> commit as one unit
-            path.write_text(text, encoding="utf-8")
+        committed: list[str] = []
+        try:
+            for path, text in buffers.items():  # all validated above -> one unit, per-file atomic replace
+                handle, tmp_name = _tempfile.mkstemp(dir=str(path.parent), prefix=f".{path.name}.", suffix=".tmp")
+                try:
+                    with _os.fdopen(handle, "w", encoding="utf-8") as fh:
+                        fh.write(text)
+                    try:
+                        _os.chmod(tmp_name, _os.stat(path).st_mode & 0o7777)
+                    except OSError:
+                        pass
+                    _os.replace(tmp_name, path)
+                except BaseException:
+                    try:
+                        _os.unlink(tmp_name)
+                    except OSError:
+                        pass
+                    raise
+                committed.append(str(path))
+        except OSError as exc:
+            return ToolResult(ok=False,
+                              error=f"apply_patch: commit failed after {len(committed)} file(s): {exc}",
+                              meta={"patches": len(blocks), "files": len(buffers), "committed": committed})
         return ToolResult(ok=True,
                           content=f"applied {len(blocks)} patch(es) across {len(buffers)} file(s)",
-                          meta={"patches": len(blocks), "files": len(buffers)})
+                          meta={"patches": len(blocks), "files": len(buffers), "committed": committed})
 
     @reg.tool(
         "read_range",
@@ -382,14 +431,17 @@ def build_builtin_registry(
             return ToolResult(ok=False, error=f"not a file: {path}")
         pattern = _re.compile(r"^(\s*)(?:async\s+)?(def|class)\s+([A-Za-z_]\w*)")
         out: list[str] = []
+        truncated = False
         for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
             match = pattern.match(line)
             if match:
-                indent = len(match.group(1)) // 4
+                indent = len(match.group(1).replace("\t", "    ")) // 4
                 out.append(f"{number}\t{'  ' * indent}{match.group(2)} {match.group(3)}")
                 if len(out) >= 200:
+                    truncated = True
                     break
-        return ToolResult(ok=True, content="\n".join(out) or "(no symbols found)", meta={"symbols": len(out)})
+        return ToolResult(ok=True, content="\n".join(out) or "(no symbols found)",
+                          meta={"symbols": len(out), "truncated": truncated})
 
     @reg.tool(
         "shell_exec",

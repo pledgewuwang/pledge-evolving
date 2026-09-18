@@ -2800,6 +2800,18 @@ def test_cli_surface() -> None:
               repo_bundles.read_bytes() == pkg_bundles.read_bytes(),
               "repo bundles/ and forge/bundles/ drifted")
 
+    modes_repo = pkg_dir.parent / "bundles" / "modes" / "coding.json"
+    modes_pkg = pkg_dir / "bundles" / "modes" / "coding.json"
+    check("d2:coding-bundle-ships",
+          modes_pkg.is_file()
+          and any(row.get("id") == "tools"
+                  for row in _json.loads(modes_pkg.read_text(encoding="utf-8"))),
+          f"modes_pkg={modes_pkg}")
+    if modes_repo.is_file() and modes_pkg.is_file():
+        check("d2:modes-copies-identical",
+              modes_repo.read_bytes() == modes_pkg.read_bytes(),
+              "repo bundles/modes and forge/bundles/modes drifted")
+
     from .config import load_config as _lc
     from .cli import BUNDLE_DIR as _bd
     with tempfile.TemporaryDirectory() as tmp3:
@@ -3183,6 +3195,74 @@ def test_coding_mode() -> None:
             {"path": "mod.py", "old": "return 2", "new": "return 9"}]}, ctx)
         check("coding:apply-patch-commits",
               good.ok and "return 9" in target.read_text(encoding="utf-8"), good.error)
+
+        # --- round 2: strict line numbers, atomic commit, alias merge ----------
+        target.write_text("L1\nL2\nL3\nL4\nL5\n", encoding="utf-8")
+        z0 = registry.invoke("edit_file", {"path": "mod.py", "start_line": 0, "end_line": 1, "new": "X"}, ctx)
+        check("coding:edit-file-zero-line-rejected", not z0.ok, str(z0.error))
+        zf = registry.invoke("edit_file", {"path": "mod.py", "start_line": 2.7, "end_line": 3, "new": "X"}, ctx)
+        check("coding:edit-file-float-line-rejected", not zf.ok, str(zf.error))
+        zm = registry.invoke("edit_file", {"path": "mod.py", "old": "L2", "new": "X",
+                                            "start_line": 1, "end_line": 1}, ctx)
+        check("coding:edit-file-old-range-mutex-rejected", not zm.ok, str(zm.error))
+        zd = registry.invoke("edit_file", {"path": "mod.py", "start_line": 2, "end_line": 2, "new": ""}, ctx)
+        check("coding:edit-file-range-delete",
+              zd.ok and target.read_text(encoding="utf-8") == "L1\nL3\nL4\nL5\n", str(zd.error))
+
+        target.write_text("foo foo foo\n", encoding="utf-8")
+        ra = registry.invoke("edit_file", {"path": "mod.py", "old": "foo", "new": "bar", "replace_all": True}, ctx)
+        check("coding:edit-file-replace-all",
+              ra.ok and target.read_text(encoding="utf-8") == "bar bar bar\n", str(ra.error))
+        amb = registry.invoke("edit_file", {"path": "mod.py", "old": "bar", "new": "z"}, ctx)
+        check("coding:edit-file-ambiguous-rejected", not amb.ok and "ambiguous" in amb.error, str(amb.error))
+
+        empty = registry.invoke("apply_patch", {"patches": []}, ctx)
+        check("coding:apply-patch-empty-rejected", not empty.ok, str(empty.error))
+        target.write_text("one\ntwo\n", encoding="utf-8")
+        ea = registry.invoke("apply_patch", {"edits": [{"path": "mod.py", "old": "one", "new": "ONE"}]}, ctx)
+        check("coding:apply-patch-edits-alias-commits",
+              ea.ok and target.read_text(encoding="utf-8") == "ONE\ntwo\n", str(ea.error))
+        target.write_text("one\ntwo\n", encoding="utf-8")
+        (workspace / "sub").mkdir(exist_ok=True)
+        dup = registry.invoke("apply_patch", {"patches": [
+            {"path": "mod.py", "old": "one", "new": "ONE"},
+            {"path": "sub/../mod.py", "old": "two", "new": "TWO"}]}, ctx)
+        check("coding:apply-patch-alias-merged",
+              dup.ok and (dup.meta or {}).get("files") == 1
+              and target.read_text(encoding="utf-8") == "ONE\nTWO\n",
+              f"ok={dup.ok} meta={dup.meta} err={dup.error}")
+        check("coding:apply-patch-commit-meta", bool((dup.meta or {}).get("committed")), str(dup.meta))
+
+        target.write_text("a\nb\nc\n", encoding="utf-8")
+        rc = registry.invoke("read_range", {"path": "mod.py", "start": -2, "end": 99}, ctx)
+        check("coding:read-range-clamps", rc.ok and rc.content.count("\n") == 2, str(rc.content))
+        rb = registry.invoke("read_range", {"path": "mod.py", "start": 9}, ctx)
+        check("coding:read-range-beyond-rejected", not rb.ok, str(rb.error))
+
+        target.write_text("x = 1\n", encoding="utf-8")
+        ns = registry.invoke("file_outline", {"path": "mod.py"}, ctx)
+        check("coding:file-outline-no-symbols", ns.ok and "(no symbols found)" in ns.content, str(ns.content))
+
+        target.write_text("r1\nr2\nr3\nr4\n", encoding="utf-8")
+        zr = registry.invoke("edit_file", {"path": "mod.py", "start_line": 3, "end_line": 1, "new": "X"}, ctx)
+        check("coding:edit-file-reversed-range-rejected", not zr.ok, str(zr.error))
+        zn = registry.invoke("edit_file", {"path": "mod.py", "start_line": -1, "end_line": 2, "new": "X"}, ctx)
+        check("coding:edit-file-negative-line-rejected", not zn.ok, str(zn.error))
+        zo = registry.invoke("edit_file", {"path": "mod.py", "start_line": 1, "end_line": 99, "new": "X"}, ctx)
+        check("coding:edit-file-range-beyond-rejected", not zo.ok, str(zo.error))
+
+        nl = registry.invoke("apply_patch", {"patches": "not-a-list"}, ctx)
+        check("coding:apply-patch-non-list-rejected", not nl.ok, str(nl.error))
+
+        target.write_text("", encoding="utf-8")
+        re0 = registry.invoke("read_range", {"path": "mod.py", "start": 1, "end": 1}, ctx)
+        check("coding:read-range-empty-file-rejected", not re0.ok, str(re0.error))
+
+        target.write_text("".join(f"def f{i}(): pass\n" for i in range(205)), encoding="utf-8")
+        big = registry.invoke("file_outline", {"path": "mod.py"}, ctx)
+        check("coding:file-outline-truncates",
+              big.ok and (big.meta or {}).get("truncated") is True and (big.meta or {}).get("symbols") == 200,
+              str(big.meta))
 
     parser = build_parser()
     check("coding:flag-default-off",
