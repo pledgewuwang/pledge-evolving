@@ -340,7 +340,14 @@ def selftest() -> List[tuple[str, bool, str]]:
     def _bad(name: str, detail: str):
         results.append((name, False, detail))
 
-    ws = r"C:\work"
+    # 平台感知：POSIX 上 "C:\..." 不是绝对路径，会被当相对片段拼进 workspace，
+    # #9 的越界用例随之失真（Windows 写法仅在 nt 下成立）。
+    if os.name == "nt":
+        ws = r"C:\work"
+        outside_path = r"C:\other\x.txt"
+    else:
+        ws = "/w/forge-ws"
+        outside_path = "/o/forge-outside.txt"
 
     # 1. MCP 归一
     specs_mcp = [{
@@ -419,8 +426,8 @@ def selftest() -> List[tuple[str, bool, str]]:
     else:
         _bad("deny 恒优先", str(d))
 
-    # 9. 越界路径被拒
-    d = authorize("write_file", "default", {}, r"C:\other\x.txt", ws)
+    # 9. 越界路径被拒（界外绝对路径，随平台取值）
+    d = authorize("write_file", "default", {}, outside_path, ws)
     if d["decision"] == "deny":
         _ok("越界路径被拒")
     else:
