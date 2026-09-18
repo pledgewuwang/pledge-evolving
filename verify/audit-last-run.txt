@@ -1,48 +1,48 @@
 
 ## 第 1 组
   [PASS] claims:selftest              自检项数（README 声明 vs 实测）
-         README=228 实测=228 退出码=0（另有嵌套自检行 ['7']）
+         README=None 实测=460 退出码=0（另有嵌套自检行 ['7']）
   [PASS] claims:modules               贡献模块数（实测）
-         contributed=11 healthy=11 assertions=164 (round3 任务书点名 4 份)
+         contributed=12 healthy=12 assertions=240 (round3 任务书点名 4 份)
   [PASS] claims:assertion-floor       单模块断言均值 vs 任务书下限 10
-         均值=14.9（164/11）；任务书要求每份 ≥10 条
+         均值=20.0（240/12）；任务书要求每份 ≥10 条
 
 ## 第 2 组
   [PASS] evidence:total-rows          健康模块的断言总行数
-         164 行，来自 11 份模块；legacy 适配 2 份（mcp_bridge, toolhost）
-  [FAIL] evidence:zero-output-pass    存在「无输出 ⇒ 判 pass」的合成通过行
-         2/164 行没有任何可核验内容：mcp_bridge::legacy:selftest: self-test produced no output; toolhost::legacy:_self_test: self-test produced no output
+         240 行，来自 12 份模块；legacy 适配 0 份（）
+  [PASS] evidence:zero-output-pass    存在「无输出 ⇒ 判 pass」的合成通过行
+         0/240
   [PASS] evidence:effective-density   扣除真空行后的单模块断言密度
-         有效行/模块=14.7
-  [WARN] evidence:adapter-floor       legacy 适配的最低断言门槛
-         ADAPTER_MIN_ASSERTIONS=1（契约模块门槛 MIN_ASSERTIONS=8）
+         有效行/模块=20.0
+  [PASS] evidence:adapter-floor       legacy 适配的最低断言门槛
+         ADAPTER_MIN_ASSERTIONS=8（契约模块门槛 MIN_ASSERTIONS=8）
 
 ## 第 3 组
-  [FAIL] gate:empty-selftest          把作者自检换成空实现后，闸门是否仍然放行
-         基线 healthy=11 assertions=164；空测试 healthy=11 assertions=164；toolhost 仍入库=True
+  [PASS] gate:empty-selftest          把作者自检换成空实现后，闸门是否仍然放行
+         基线 healthy=12 assertions=240；空测试 healthy=11 assertions=215；toolhost 仍入库=True
   [PASS] gate:broken-impl             破坏一处真实行为后，闸门是否拦得住（正对照）
-         破坏后 healthy=10（基线 11）；隔离行=[FAIL] toolhost               ["contributor self-test failures: 只读启发失败, 越界路径被拒失败: {'decision': 'allow', 'reason': 'read tool in default mode'}, 相对路径解析失败: {'decision': 'allow', 'reason': 'read tool in default mode'}, .. 越界失败: {'decision': 'allow', 'reason': 'read tool in default mode'}, 空路径写入失败: {'de
+         破坏后 healthy=11（基线 12）；隔离行=[FAIL] toolhost               ['selftest failures: 只读启发, 越界路径被拒, 相对路径正确解析, .. 越界, 空路径写入 deny']
 
 ## 第 4 组
   [PASS] seam:mcp-name-shape          mcp_bridge.discover 产出的工具名形态
-         name=['fs/read_file'] read_only=[True]
-  [FAIL] seam:toolhost-accepts-mcp    toolhost.register_tools 是否接受 mcp_bridge 的产物
-         输入=['fs/read_file'] → 保留=[] 丢弃=["invalid tool name: 'fs/read_file'"]
-  [WARN] seam:readonly-flip           加 server 前缀后只读分类是否翻转
-         read_file -> read_only=True；fs/read_file -> read_only=None
+         name=['fs__read_file'] read_only=[True]
+  [PASS] seam:toolhost-accepts-mcp    toolhost.register_tools 是否接受 mcp_bridge 的产物
+         输入=['fs__read_file'] → 保留=['fs__read_file'] 丢弃=[]
+  [PASS] seam:readonly-flip           加 server 前缀后只读分类是否翻转
+         read_file -> read_only=True；fs__read_file -> read_only=True
 
 ## 第 5 组
   [FAIL] perm:name-decides            权限判定是否只看名字（声明 readOnlyHint 是否被采信）
          write tool named read_*: read_secrets -> allow; write tool named list_*: list_and_wipe -> allow; honest write tool: write_file -> deny; prefixed read tool: fs/read_file -> deny
   [PASS] perm:hint-honoured           register_tools 是否采信 readOnlyHint=False
          read_everything + readOnlyHint=False -> read_only=False
-  [WARN] perm:signature-gap           authorize 是否可能消费归一后的 read_only 字段
-         authorize 形参=['tool', 'mode', 'rules', 'target_path', 'workspace']（归一产物里的 read_only/readOnlyHint 无处传入）
+  [PASS] perm:signature-gap           authorize 是否可能消费归一后的 read_only 字段
+         authorize 形参=['tool', 'mode', 'rules', 'target_path', 'workspace', 'spec']（归一产物里的 read_only/readOnlyHint 无处传入）
 
 ## 第 6 组
   [PASS] hooks:reachability           声明钩子的可达性
-         29 个钩子，不可达 0 个
+         33 个钩子，不可达 0 个
   [PASS] hooks:capability-overlap     能力标签重合（多实现并存）
-         30 个标签；重合 2 个：{'schedule.periodic': ['heartbeat', 'scheduler'], 'schedule.due-check': ['heartbeat', 'scheduler']}
+         31 个标签；重合 2 个：{'schedule.periodic': ['heartbeat', 'scheduler'], 'schedule.due-check': ['heartbeat', 'scheduler']}
 
-合计：17 项检查，FAIL 4，WARN 3
+合计：17 项检查，FAIL 1，WARN 0
