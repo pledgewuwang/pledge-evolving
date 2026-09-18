@@ -1,7 +1,7 @@
-
+﻿
 ## 第 1 组
   [PASS] claims:selftest              自检项数（README 声明 vs 实测）
-         README=None 实测=460 退出码=0（另有嵌套自检行 ['7']）
+         README=None 实测=503 退出码=0（另有嵌套自检行 ['7']）
   [PASS] claims:modules               贡献模块数（实测）
          contributed=12 healthy=12 assertions=240 (round3 任务书点名 4 份)
   [PASS] claims:assertion-floor       单模块断言均值 vs 任务书下限 10
