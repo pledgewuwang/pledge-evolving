@@ -1,4 +1,4 @@
-# AI Platform × Forge 集成指南
+﻿# AI Platform × Forge 集成指南
 
 ## 架构概览
 
@@ -84,7 +84,7 @@ import { getForgeTools, isForgeTool, executeForgeTool } from "./forge-tools";
 // 在 AVAILABLE_TOOLS 数组末尾追加
 export const AVAILABLE_TOOLS: Tool[] = [
   ...existingTools,
-  ...getForgeTools(),  // ← 添加这行
+  ...getForgeTools(userSettings),  // ← 添加这行（需要传入用户设置）
 ];
 ```
 
@@ -167,6 +167,15 @@ forge agent → AI Platform chat API → 获取 AI 回答 → 返回 forge
 
 这形成了一个双向能力网络。
 
+## 默认行为：用户主动选择接入
+
+forge 工具**默认不注册**，不会出现在 AI 的工具列表中。原因：
+
+1. **工具描述消耗 token**：每个工具的 description 会随每次请求发送给 LLM，白白浪费
+2. **暴露内部细节**：forge 的架构信息不应该让用户在不知道的情况下看到
+3. **按需启用**：只有用户明确选择「接入 Forge」时，forge 工具才生效
+
+用户在 AI Platform 的设置页面开启「Forge 集成」开关后，forge 工具才会被注入到工具列表中。
 ## 安全考虑
 
 - forge gateway 默认只监听 127.0.0.1，不暴露到外网
