@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import os
 import platform
-import signal
 import subprocess
 import sys
 import threading
@@ -234,6 +233,9 @@ class ForgeApp:
         self.task_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=ENTRY_PADY)
         self.task_entry.bind("<Return>", lambda e: self._run_task())
         self.task_entry.focus_set()
+        self.root.bind("<Escape>", lambda e: self._on_close())
+        self.root.bind("<Control-l>", lambda e: self._clear_log())
+        self.root.bind("<Control-l>", lambda e: self._clear_log())
 
         # ── 按钮栏 ──
         btn_bar = tk.Frame(main, bg=C["bg"])
@@ -371,12 +373,14 @@ class ForgeApp:
         threading.Thread(target=self._exec, args=(cmd,), daemon=True).start()
 
     def _exec(self, cmd: list[str]):
+        import time
+        start = time.monotonic()
         try:
             kwargs: dict = dict(
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                encoding="utf-8-sig",
+                encoding="utf-8-sig" if IS_WINDOWS else "utf-8",
                 cwd=str(FORGE_REPO),
                 bufsize=1,
             )
@@ -394,10 +398,11 @@ class ForgeApp:
                 self.root.after(0, self._append, "".join(buffer))
 
             rc = self._proc.wait()
+            elapsed = time.monotonic() - start
             if rc == 0:
-                self.root.after(0, self._append, f"\n✓ 完成 (exit {rc})\n", "success")
+                self.root.after(0, self._append, f"\n✓ 完成 (exit {rc}, {elapsed:.1f}s)\n", "success")
             else:
-                self.root.after(0, self._append, f"\n✗ 退出码: {rc}\n", "error")
+                self.root.after(0, self._append, f"\n✗ 退出码: {rc} ({elapsed:.1f}s)\n", "error")
             self.root.after(0, self.status_var.set,
                            f"{'完成' if rc == 0 else '失败'} (exit {rc})")
         except Exception as e:
@@ -411,22 +416,17 @@ class ForgeApp:
 
     def _stop(self):
         if self._proc and self._proc.poll() is None:
-            if IS_WINDOWS:
-                try:
-                    self._proc.send_signal(signal.CTRL_BREAK_EVENT)
-                    self._proc.wait(timeout=3)
-                except (ProcessLookupError, subprocess.TimeoutExpired):
-                    try:
-                        self._proc.terminate()
-                    except Exception:
-                        pass
-            else:
-                # Unix: 发 SIGTERM，超时后 SIGKILL
+            try:
+                self._proc.kill()
+                self._proc.wait(timeout=3)
+            except ProcessLookupError:
+                pass  # 进程已自行退出
+            except subprocess.TimeoutExpired:
                 try:
                     self._proc.terminate()
-                    self._proc.wait(timeout=3)
-                except subprocess.TimeoutExpired:
-                    self._proc.kill()
+                    self._proc.wait(timeout=2)
+                except Exception:
+                    pass
             self._append("\n■ 已终止\n", "error")
             self.status_var.set("已停止")
 
