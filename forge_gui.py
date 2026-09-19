@@ -40,8 +40,8 @@ IS_LINUX = platform.system() == "Linux"
 
 # ─── 跨平台字体 ─────────────────────────────────────────
 if IS_MACOS:
-    FONT_FAMILY = "SF Mono"
-    FONT_FAMILY_UI = "SF Pro Text"
+    FONT_FAMILY = ("SF Mono", "Menlo", "Monaco", "Courier New")
+    FONT_FAMILY_UI = ("SF Pro Text", "Helvetica Neue", "Helvetica", "Arial")
     FONT_SIZE = 12
     FONT_SIZE_UI = 13
     FONT_SIZE_BTN = 13
@@ -50,8 +50,8 @@ if IS_MACOS:
     PAD_Y_MID = 6
     ENTRY_PADY = 6
 elif IS_LINUX:
-    FONT_FAMILY = "JetBrains Mono"
-    FONT_FAMILY_UI = "Cantarell"
+    FONT_FAMILY = ("JetBrains Mono", "Fira Code", "DejaVu Sans Mono", "Liberation Mono")
+    FONT_FAMILY_UI = ("Cantarell", "Noto Sans", "DejaVu Sans", "Liberation Sans")
     FONT_SIZE = 11
     FONT_SIZE_UI = 11
     FONT_SIZE_BTN = 11
@@ -60,7 +60,7 @@ elif IS_LINUX:
     PAD_Y_MID = 5
     ENTRY_PADY = 5
 else:  # Windows
-    FONT_FAMILY = "Cascadia Code"
+    FONT_FAMILY = ("Cascadia Code", "Consolas", "Lucida Console", "Courier New")
     FONT_FAMILY_UI = "Segoe UI"
     FONT_SIZE = 11
     FONT_SIZE_UI = 10
@@ -87,7 +87,7 @@ C = {
     "log_fg":   "#bac2de",   # 日志文字
     "input_bg": "#181825",   # 输入框背景
     "border":   "#585b70",   # 边框
-    "radius":   8,           # 圆角半径（仅视觉，tkinter 不支持圆角）
+
 }
 
 
@@ -105,10 +105,7 @@ def _find_run_py() -> Path | None:
             candidate = env_repo / "run.py"
             if candidate.is_file():
                 return candidate
-    for p in [here.parent, here.parent.parent, here.parent.parent.parent]:
-        candidate = p / "run.py"
-        if candidate.is_file():
-            return candidate
+    # 不做盲目向上查找——避免在临时目录等意外位置绑定错仓库
     return None
 
 
@@ -384,10 +381,7 @@ class ForgeApp:
                 bufsize=1,
             )
             if IS_WINDOWS:
-                kwargs["creationflags"] = (
-                    subprocess.CREATE_NEW_PROCESS_GROUP
-                    | subprocess.CREATE_NO_WINDOW
-                )
+                kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
             self._proc = subprocess.Popen(cmd, **kwargs)
 
             buffer: list[str] = []
