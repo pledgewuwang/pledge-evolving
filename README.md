@@ -1,10 +1,26 @@
-# forge — 统一智能体框架
+﻿# pledge-evolving — 统一智能体框架
 
 把 **Codex / Hermes Agent / DeepSeek Harness / Claude Code / WorkBuddy(CodeBuddy) / OpenClaw / OpenCode** 七套框架里各自最值得抄的设计，收敛成一个可运行的最小内核。
 
-不是概念图，是能跑的代码：`forge selftest` 离线跑全套检查（无网络、无 API Key，项数以命令实际输出为准），覆盖配置合成、权限裁决、工具延迟加载、能力信任、记忆双写、会话回放、影子快照、模型降级、协议网关与协议翻译、原生工具调用、自我迭代进化、异构联邦、贡献模块一致性闸门与跨模块集成、成本核算、子代理编排，以及静态安全线（禁网/禁子进程/禁破坏性文件 API 的表对齐不变量与四路覆盖）。
+不是概念图，是能跑的代码：`python run.py selftest` 离线跑全套检查（无网络、无 API Key，项数以命令实际输出为准），覆盖配置合成、权限裁决、工具延迟加载、能力信任、记忆双写、会话回放、影子快照、模型降级、协议网关与协议翻译、原生工具调用、自我迭代进化、异构联邦、贡献模块一致性闸门与跨模块集成、成本核算、子代理编排，以及静态安全线（禁网/禁子进程/禁破坏性文件 API 的表对齐不变量与四路覆盖）。
 
 零第三方依赖（纯标准库），Python ≥ 3.10。
+
+## v0.7.0：三档模型智能路由
+
+新增 `forge/routing.py`（SmartRouter，ModelRouter 子类，冻结契约零改动）。任务级选档，三种策略：
+
+| 策略 | 路由逻辑 |
+| --- | --- |
+| `economy` | 按有效单价升序走档（pricing.py 账单反推价），仅可重试失败才上浮；未知价保守殿后，不被当免费档打穿 |
+| `balanced` | 中端主力档首发，失败向上升级 + 冻结 chain 兑底（默认） |
+| `premium` | 两阶段流水：中端出草稿 → 高端集成裁决；集成段任何失败（含 fatal）都降级回草稿——草稿已付费不弃；消息形状严格角色交替（system/user/assistant/user），集成档只收原任务+草稿，完整对话不外流 |
+
+```bash
+python run.py run "任务" --strategy economy      # CLI 显式指定（> 配置 > 默认 balanced）
+```
+
+配置在 `bundles/base.json` 的 `model.routing` 块：`tiers`（档位表，按成本序声明）、`premium`（集成裁决档）、`small`（杂务档，失败不上浮烧不到审查档）。计价表未知价=0.0 的单一权威定义见 `pricing.py` 顶部注释（routing 取保守解释、预算缩放取宽松解释，有意不同）。
 
 ## v2 新增（0.2.0）
 
@@ -72,26 +88,12 @@ v4 交付后进入修复轮：每一轮都由独立复验席自写探针攻击�
 4. **router/teams 主键冻结（F2-3）**：worker/member 以 `id` 为主键（同一键空间），`name` 只作显示与排序；集成自检改反值构造（id ≠ name），同值掩盖从此翻红。
 5. **validate 警告行（F5-4）+ 正则清理（F5-5）**：`modules validate` 就地打印 `[warn]` 行；evolution 信号正则清除生成期串味残留。
 
-## v0.7.0：三档模型智能路由
-
-新增 `forge/routing.py`（SmartRouter，ModelRouter 子类，冻结契约零改动）。任务级选档，三种策略：
-
-| 策略 | 路由逻辑 |
-| --- | --- |
-| `economy` | 按有效单价升序走档（pricing.py 账单反推价），仅可重试失败才上浮；未知价保守殿后，不被当免费档打穿 |
-| `balanced` | 中端主力档首发，失败向上升级 + 冻结 chain 兑底（默认） |
-| `premium` | 两阶段流水：中端出草稿 → 高端集成裁决；集成段任何失败（含 fatal）都降级回草稿——草稿已付费不弃；消息形状严格角色交替（system/user/assistant/user），集成档只收原任务+草稿，完整对话不外流 |
-
-```bash
-python run.py run "任务" --strategy economy      # CLI 显式指定（> 配置 > 默认 balanced）
-```
-
-配置在 `bundles/base.json` 的 `model.routing` 块：`tiers`（档位表，按成本序声明）、`premium`（集成裁决档）、`small`（杂务档，失败不上浮烧不到审查档）。计价表未知价=0.0 的单一权威定义见 `pricing.py` 顶部注释（routing 取保守解释、预算缩放取宽松解释，有意不同）。
-
 ## 快速开始
 
+> ⚠️ 仓库名是 **pledge-evolving**，不要因为框架曾叫 forge 就困惑。包名叫 `forge`，是因为内部模块名冻结为这个名字。你是 clone 了 pledge-evolving，cd 进它，然后 `python run.py`。
+
 ```bash
-cd agent-forge
+cd pledge-evolving
 
 python run.py selftest            # 离线自检，项数以实际输出为准
 python run.py dump-config         # 看合成出的配置树
@@ -104,6 +106,46 @@ python run.py gateway --upstream https://api.deepseek.com --port 8799 --models c
 `run.py` 是必需的入口：AutoClaw 内嵌 Python 用 `._pth` 布局，`python -m forge.cli` 会报 `No module named 'forge'`（当前目录不入 `sys.path`，`PYTHONPATH` 也失效）。外面用标准 Python 时 `python -m forge.cli` 可用。
 
 零第三方依赖（纯标准库），Python ≥ 3.10。
+
+## 第一次跑真实任务
+
+看到 selftest 全绿之后，下一个问题是：接上真实模型，跑一个真实任务。
+
+### 1. 拿到 API Key
+
+以 DeepSeek 为例，去 [platform.deepseek.com](https://platform.deepseek.com) 注册，在「API 密钥」页面创建一个。复制出来的字符串以 `sk-` 开头，完整保存到本地——只显示一次，关掉页面就再也看不到了。
+
+### 2. 设置环境变量
+
+Windows（PowerShell）：
+
+```powershell
+$env:FORGE_DEEPSEEK_KEY = "sk-xxxxxxxxxxxxxxxx"
+```
+
+Windows（CMD）：
+
+```cmd
+set FORGE_DEEPSEEK_KEY=sk-xxxxxxxxxxxxxxxx
+```
+
+macOS / Linux：
+
+```bash
+export FORGE_DEEPSEEK_KEY="sk-xxxxxxxxxxxxxxxx"
+```
+
+> 变量名 `FORGE_DEEPSEEK_KEY` 是 DeepSeek 的约定写法；换 provider 对应换变量名，见 `doctor` 命令输出。
+
+### 3. 跑第一个任务
+
+```bash
+python run.py run "你好，用一句话介绍一下你自己"
+```
+
+预期输出：模型回复一段话（取决于你配置的 provider）。如果报 `网络中断` 或 `401`，先跑 `python run.py doctor` 检查 key 是否被识别。
+
+如果 `doctor` 说一切正常但仍报错，检查网络（代理、防火墙），或换一个 provider 试试（比如 `FORGE_OPENAI_KEY`）。
 
 ## 七套框架 → 一处落点
 
@@ -145,7 +187,7 @@ python run.py gateway --upstream https://api.deepseek.com --port 8799 --models c
 ## 目录
 
 ```
-agent-forge/
+pledge-evolving/
 ├── forge/
 │   ├── config.py       空根 + 补丁层合成（DSH）
 │   ├── policy.py       二维权限 + 三档沙箱 + 命令黑名单（CodeBuddy / Codex）
@@ -158,7 +200,13 @@ agent-forge/
 │   ├── loop.py         agent 主循环 + 子代理编排（OpenClaw / CodeBuddy）
 │   ├── gateway.py      环回协议网关（本次集成实测产物）
 │   ├── cli.py          命令行面
-│   └── selftest.py     离线验证套件
+│   ├── selftest.py     离线验证套件
+│   ├── routing.py      三档智能路由（economy / balanced / premium）
+│   ├── toolwire.py     原生工具调用（原生优先、文本兜底）
+│   ├── wire.py         Anthropic ↔ OpenAI 协议翻译，含 SSE 流式
+│   ├── evolution.py    自我进化：信号抽取 → 候选 → 闸门 → 账本 → 回滚 → 代谢
+│   ├── federation.py   异构 CLI 智能体联邦：描述符 / 派发 / 失败分类 / 输出归一
+│   └── contrib/        贡献模块（packages/contrib 目录即能力）
 └── bundles/
     └── base.json       基线配置层（provider / policy / loop / model）
 ```
@@ -174,3 +222,4 @@ agent-forge/
 - premium 两阶段会把**草稿与原始任务**发送给集成裁决档（知情使用：配置了 premium 档即同意该数据面）；完整对话历史不会外流。
 - `mount_contrib_extensions` 的双注册表保底覆盖静态闸和钩子可解析性；运行期钩子异常的保底由 `_use_extension` 的异常捕获兜底（不回退到包内模块）——需要「坏钩子不抢位」的场景应改为运行期降级重试（复杂，登记非挂账）。
 - `teams.deliver` 的 `to` 方向只做 id 寻址（无 name→id 解析），`from` 方向支持 name 唯一归属解析——非对称设计，安全但需注意：`to` 不可用显示名。
+
