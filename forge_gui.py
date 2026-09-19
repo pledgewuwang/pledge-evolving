@@ -312,16 +312,59 @@ class ForgeApp:
         )
         self.status_label.pack(side=tk.LEFT)
 
-        # 版本标签
+        # 版本标签 + 性能面板切换
+        right_frame = tk.Frame(status_bar, bg=C["bg"])
+        right_frame.pack(side=tk.RIGHT)
+
+        self._perf_visible = False
+        self.perf_btn = tk.Label(
+            right_frame, text="📊 性能", bg=C["bg"], fg=C["muted"],
+            font=(FONT_FAMILY_UI, 9), cursor="hand2",
+        )
+        self.perf_btn.pack(side=tk.LEFT, padx=(0, 8))
+        self.perf_btn.bind("<Button-1>", lambda e: self._toggle_perf())
+
         try:
             from forge import __version__
             ver = __version__
         except Exception:
             ver = "dev"
         tk.Label(
-            status_bar, text=f"v{ver}", bg=C["bg"], fg=C["muted"],
+            right_frame, text=f"v{ver}", bg=C["bg"], fg=C["muted"],
             font=(FONT_FAMILY_UI, 9), anchor=tk.E,
-        ).pack(side=tk.RIGHT)
+        ).pack(side=tk.LEFT)
+
+        # ── 性能面板（默认隐藏）──
+        self.perf_frame = tk.Frame(main, bg=C["surface"], padx=14, pady=8)
+
+        # 运行历史统计
+        self._run_times: list[float] = []
+        self._run_tokens: list[int] = []
+        self._run_costs: list[float] = []
+
+        perf_grid = tk.Frame(self.perf_frame, bg=C["surface"])
+        perf_grid.pack(fill=tk.X)
+
+        self.perf_labels = {}
+        metrics = [
+            ("total_runs", "总运行", "0"),
+            ("avg_time", "平均耗时", "—"),
+            ("std_time", "耗时标准差", "—"),
+            ("p95_time", "P95 耗时", "—"),
+            ("success_rate", "成功率", "—"),
+            ("total_cost", "总费用", "¥0.00"),
+        ]
+        for i, (key, label, default) in enumerate(metrics):
+            col = i % 3
+            row = i // 3
+            cell = tk.Frame(perf_grid, bg=C["surface"], padx=8, pady=4)
+            cell.grid(row=row, column=col, sticky="w", padx=(0, 16))
+            tk.Label(cell, text=label, bg=C["surface"], fg=C["muted"],
+                     font=(FONT_FAMILY_UI, 9)).pack(anchor="w")
+            lbl = tk.Label(cell, text=default, bg=C["surface"], fg=C["text"],
+                          font=(FONT_FAMILY, 12, "bold"))
+            lbl.pack(anchor="w")
+            self.perf_labels[key] = lbl
 
     # ── 日志 ─────────────────────────────────────────────
     def _append(self, text: str, tag: str = ""):
@@ -399,6 +442,7 @@ class ForgeApp:
 
             rc = self._proc.wait()
             elapsed = time.monotonic() - start
+            self.root.after(0, self._record_run, elapsed, rc == 0)
             if rc == 0:
                 self.root.after(0, self._append, f"\n✓ 完成 (exit {rc}, {elapsed:.1f}s)\n", "success")
             else:
