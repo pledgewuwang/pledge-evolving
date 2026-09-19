@@ -1,21 +1,24 @@
 """
-pledge-evolving Windows GUI — 最粗档桌面交互界面
+pledge-evolving Windows GUI — 跨平台桌面交互界面
 零依赖，纯 tkinter（Python 3.10+ 自带），双击即用。
+支持 Windows / macOS / Linux 统一体验。
 
 用法：
     python forge_gui.py          # 直接运行
-    pythonw forge_gui.py        # 无控制台窗口
+    pythonw forge_gui.py        # 无控制台窗口（Windows）
 
 功能：
     - 输入任务，一键运行 forge run
     - 选择策略（economy / balanced / premium）
     - 实时输出日志
     - selftest / doctor 快捷按钮
+    - 跨平台：Windows / macOS / Linux 自适应字体与 DPI
 """
 
 from __future__ import annotations
 
 import os
+import platform
 import signal
 import subprocess
 import sys
@@ -24,32 +27,77 @@ import tkinter as tk
 from tkinter import scrolledtext, messagebox
 from pathlib import Path
 
-# ---------- 常量 ----------
-WINDOW_SIZE = "780x560"
-MIN_SIZE = (640, 400)
-MAX_LOG_LINES = 1000
-FLUSH_THRESHOLD = 20  # 批量刷新阈值
+# ─── 常量 ────────────────────────────────────────────────
+WINDOW_SIZE = "820x600"
+MIN_SIZE = (640, 440)
+MAX_LOG_LINES = 2000
+FLUSH_THRESHOLD = 16
 
-# ---------- 颜色 ----------
-BG = "#1e1e2e"
-FG = "#cdd6f4"
-ACCENT = "#89b4fa"
-BTN_BG = "#313244"
-BTN_FG = "#cdd6f4"
-ERR_FG = "#f38ba8"
-LOG_BG = "#11111b"
-LOG_FG = "#a6adc8"
+# ─── 跨平台检测 ─────────────────────────────────────────
+IS_WINDOWS = platform.system() == "Windows"
+IS_MACOS = platform.system() == "Darwin"
+IS_LINUX = platform.system() == "Linux"
+
+# ─── 跨平台字体 ─────────────────────────────────────────
+if IS_MACOS:
+    FONT_FAMILY = "SF Mono"
+    FONT_FAMILY_UI = "SF Pro Text"
+    FONT_SIZE = 12
+    FONT_SIZE_UI = 13
+    FONT_SIZE_BTN = 13
+    PAD_X = 16
+    PAD_Y_TOP = 14
+    PAD_Y_MID = 6
+    ENTRY_PADY = 6
+elif IS_LINUX:
+    FONT_FAMILY = "JetBrains Mono"
+    FONT_FAMILY_UI = "Cantarell"
+    FONT_SIZE = 11
+    FONT_SIZE_UI = 11
+    FONT_SIZE_BTN = 11
+    PAD_X = 14
+    PAD_Y_TOP = 12
+    PAD_Y_MID = 5
+    ENTRY_PADY = 5
+else:  # Windows
+    FONT_FAMILY = "Cascadia Code"
+    FONT_FAMILY_UI = "Segoe UI"
+    FONT_SIZE = 11
+    FONT_SIZE_UI = 10
+    FONT_SIZE_BTN = 10
+    PAD_X = 12
+    PAD_Y_TOP = 10
+    PAD_Y_MID = 4
+    ENTRY_PADY = 4
+
+# ─── 调色板 ──────────────────────────────────────────────
+# Catppuccin Mocha-inspired palette
+C = {
+    "bg":       "#1e1e2e",   # 窗口背景
+    "surface":  "#313244",   # 卡片/按钮背景
+    "overlay":  "#45475a",   # hover 状态
+    "text":     "#cdd6f4",   # 主文字
+    "subtext":  "#a6adc8",   # 次要文字
+    "muted":    "#6c7086",   # 禁用/占位
+    "accent":   "#89b4fa",   # 主题色（蓝）
+    "accent2":  "#a6e3a1",   # 成功（绿）
+    "error":    "#f38ba8",   # 错误（红）
+    "warn":     "#f9e2af",   # 警告（黄）
+    "log_bg":   "#11111b",   # 日志背景
+    "log_fg":   "#bac2de",   # 日志文字
+    "input_bg": "#181825",   # 输入框背景
+    "border":   "#585b70",   # 边框
+    "radius":   8,           # 圆角半径（仅视觉，tkinter 不支持圆角）
+}
 
 
-# ---------- 路径探测 ----------
+# ─── 路径探测 ────────────────────────────────────────────
 def _find_run_py() -> Path | None:
     """多策略定位 run.py：同目录 → 环境变量 → 向上查找 3 层。"""
     here = Path(__file__).resolve().parent
-    # ① 同目录
     candidate = here / "run.py"
     if candidate.is_file():
         return candidate
-    # ② 环境变量（非空才走）
     forge_repo = os.environ.get("FORGE_REPO", "").strip()
     if forge_repo:
         env_repo = Path(forge_repo)
@@ -57,7 +105,6 @@ def _find_run_py() -> Path | None:
             candidate = env_repo / "run.py"
             if candidate.is_file():
                 return candidate
-    # ③ 向上查找 3 层
     for p in [here.parent, here.parent.parent, here.parent.parent.parent]:
         candidate = p / "run.py"
         if candidate.is_file():
@@ -74,88 +121,212 @@ if RUN_PY is None:
 FORGE_REPO = RUN_PY.parent
 
 
+# ─── 跨平台 DPI 适配 ────────────────────────────────────
+def _setup_dpi():
+    """高 DPI 适配：Windows 和 macOS 各自处理。"""
+    if IS_WINDOWS:
+        try:
+            from ctypes import windll
+            windll.shcore.SetProcessDpiAwareness(1)
+        except Exception:
+            pass
+    # macOS 和 Linux 的 tkinter 在高 DPI 下默认行为较好，无需额外处理
+
+
 class ForgeApp:
     def __init__(self, root: tk.Tk):
         self.root = root
-        self.root.title("pledge-evolving GUI")
+        self.root.title("forge")
         self.root.geometry(WINDOW_SIZE)
-        self.root.configure(bg=BG)
+        self.root.configure(bg=C["bg"])
         self.root.minsize(*MIN_SIZE)
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
+
+        # 跨平台图标（不依赖外部文件）
+        self._set_icon()
 
         self._running = False
         self._proc: subprocess.Popen | None = None
 
         self._build_ui()
 
-    # ── UI ──────────────────────────────────────────────
+    def _set_icon(self):
+        """设置窗口图标（跨平台兼容）。"""
+        try:
+            # 用 tkinter 内置的 photo image 设置小图标
+            icon_size = 16
+            icon = tk.PhotoImage(width=icon_size, height=icon_size)
+            # 画一个简单的 F 字母作为图标
+            for y in range(icon_size):
+                for x in range(icon_size):
+                    # 简单的几何图形
+                    if (2 <= x <= 13 and 2 <= y <= 4) or \
+                       (2 <= x <= 4 and 2 <= y <= 13) or \
+                       (2 <= x <= 10 and 7 <= y <= 9):
+                        icon.put(C["accent"], (x, y))
+            self.root.iconphoto(True, icon)
+        except Exception:
+            pass  # 某些窗口管理器不支持
+
+    # ── UI 构建 ──────────────────────────────────────────
     def _build_ui(self):
-        # 顶部：策略选择
-        top = tk.Frame(self.root, bg=BG)
-        top.pack(fill=tk.X, padx=12, pady=(10, 4))
+        # 主容器（留内边距）
+        main = tk.Frame(self.root, bg=C["bg"], padx=PAD_X, pady=PAD_Y_TOP)
+        main.pack(fill=tk.BOTH, expand=True)
 
-        tk.Label(top, text="策略:", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(side=tk.LEFT)
+        # ── 标题栏 ──
+        header = tk.Frame(main, bg=C["bg"])
+        header.pack(fill=tk.X, pady=(0, 12))
+
+        tk.Label(
+            header, text="forge", bg=C["bg"], fg=C["text"],
+            font=(FONT_FAMILY, 16, "bold"),
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            header, text=" pledge-evolving", bg=C["bg"], fg=C["muted"],
+            font=(FONT_FAMILY_UI, 11),
+        ).pack(side=tk.LEFT, padx=(4, 0), pady=(2, 0))
+
+        # ── 策略选择卡片 ──
+        strategy_card = tk.Frame(main, bg=C["surface"], padx=14, pady=10)
+        strategy_card.pack(fill=tk.X, pady=(0, 8))
+
+        tk.Label(
+            strategy_card, text="策略", bg=C["surface"], fg=C["subtext"],
+            font=(FONT_FAMILY_UI, FONT_SIZE_UI),
+        ).pack(side=tk.LEFT, padx=(0, 12))
+
         self.strategy_var = tk.StringVar(value="balanced")
-        for s in ("economy", "balanced", "premium"):
+        strategies = [
+            ("economy", "经济", "按成本升序，失败才升级"),
+            ("balanced", "均衡", "中端主力，失败升级（推荐）"),
+            ("premium", "高端", "中端草稿 → 高端裁决"),
+        ]
+        for val, label, tip in strategies:
+            frame = tk.Frame(strategy_card, bg=C["surface"])
+            frame.pack(side=tk.LEFT, padx=(0, 16))
             tk.Radiobutton(
-                top, text=s, variable=self.strategy_var, value=s,
-                bg=BG, fg=FG, selectcolor=BTN_BG, activebackground=BG,
-                activeforeground=ACCENT, font=("Segoe UI", 10),
-            ).pack(side=tk.LEFT, padx=6)
+                frame, text=label, variable=self.strategy_var, value=val,
+                bg=C["surface"], fg=C["text"], selectcolor=C["overlay"],
+                activebackground=C["surface"], activeforeground=C["accent"],
+                font=(FONT_FAMILY_UI, FONT_SIZE_UI),
+                indicatoron=True,
+            ).pack(side=tk.LEFT)
+            tk.Label(
+                frame, text=tip, bg=C["surface"], fg=C["muted"],
+                font=(FONT_FAMILY_UI, 9),
+            ).pack(side=tk.LEFT, padx=(4, 0))
 
-        # 任务输入
-        mid = tk.Frame(self.root, bg=BG)
-        mid.pack(fill=tk.X, padx=12, pady=4)
+        # ── 任务输入 ──
+        input_card = tk.Frame(main, bg=C["surface"], padx=14, pady=10)
+        input_card.pack(fill=tk.X, pady=(0, 8))
 
-        tk.Label(mid, text="任务:", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(side=tk.LEFT)
-        self.task_entry = tk.Entry(mid, bg=LOG_BG, fg=FG, insertbackground=FG,
-                                   font=("Consolas", 11), relief=tk.FLAT)
-        self.task_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(8, 0), ipady=4)
+        tk.Label(
+            input_card, text="任务", bg=C["surface"], fg=C["subtext"],
+            font=(FONT_FAMILY_UI, FONT_SIZE_UI),
+        ).pack(side=tk.LEFT, padx=(0, 12))
+
+        self.task_entry = tk.Entry(
+            input_card, bg=C["input_bg"], fg=C["text"],
+            insertbackground=C["accent"],
+            font=(FONT_FAMILY, FONT_SIZE),
+            relief=tk.FLAT, highlightthickness=1,
+            highlightbackground=C["border"], highlightcolor=C["accent"],
+        )
+        self.task_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=ENTRY_PADY)
         self.task_entry.bind("<Return>", lambda e: self._run_task())
+        self.task_entry.focus_set()
 
-        # 按钮行
-        btns = tk.Frame(self.root, bg=BG)
-        btns.pack(fill=tk.X, padx=12, pady=4)
+        # ── 按钮栏 ──
+        btn_bar = tk.Frame(main, bg=C["bg"])
+        btn_bar.pack(fill=tk.X, pady=(0, 10))
 
-        self.run_btn = tk.Button(btns, text="▶ 运行", bg=ACCENT, fg="#1e1e2e",
-                                 font=("Segoe UI", 10, "bold"), relief=tk.FLAT,
-                                 command=self._run_task, cursor="hand2")
+        # 主按钮：运行
+        self.run_btn = tk.Button(
+            btn_bar, text="▶  运行", bg=C["accent"], fg=C["bg"],
+            font=(FONT_FAMILY_UI, FONT_SIZE_BTN, "bold"),
+            relief=tk.FLAT, padx=20, pady=4,
+            activebackground=C["overlay"], activeforeground=C["text"],
+            command=self._run_task, cursor="hand2",
+        )
         self.run_btn.pack(side=tk.LEFT, padx=(0, 8))
 
-        self.stop_btn = tk.Button(btns, text="■ 停止", bg=ERR_FG, fg="#1e1e2e",
-                                  font=("Segoe UI", 10, "bold"), relief=tk.FLAT,
-                                  command=self._stop, state=tk.DISABLED, cursor="hand2")
-        self.stop_btn.pack(side=tk.LEFT, padx=(0, 16))
-
-        tk.Button(btns, text="selftest", bg=BTN_BG, fg=BTN_FG,
-                  font=("Segoe UI", 9), relief=tk.FLAT,
-                  command=lambda: self._run_cmd(["selftest"]), cursor="hand2").pack(side=tk.LEFT, padx=4)
-
-        tk.Button(btns, text="doctor", bg=BTN_BG, fg=BTN_FG,
-                  font=("Segoe UI", 9), relief=tk.FLAT,
-                  command=lambda: self._run_cmd(["doctor"]), cursor="hand2").pack(side=tk.LEFT, padx=4)
-
-        tk.Button(btns, text="清空", bg=BTN_BG, fg=BTN_FG,
-                  font=("Segoe UI", 9), relief=tk.FLAT,
-                  command=self._clear_log, cursor="hand2").pack(side=tk.RIGHT)
-
-        # 日志输出
-        self.log = scrolledtext.ScrolledText(
-            self.root, bg=LOG_BG, fg=LOG_FG, insertbackground=FG,
-            font=("Consolas", 10), relief=tk.FLAT, wrap=tk.WORD,
-            state=tk.DISABLED,
+        # 停止按钮
+        self.stop_btn = tk.Button(
+            btn_bar, text="■ 停止", bg=C["error"], fg=C["bg"],
+            font=(FONT_FAMILY_UI, FONT_SIZE_BTN, "bold"),
+            relief=tk.FLAT, padx=14, pady=4,
+            activebackground=C["overlay"], activeforeground=C["text"],
+            command=self._stop, state=tk.DISABLED, cursor="hand2",
         )
-        self.log.pack(fill=tk.BOTH, expand=True, padx=12, pady=(4, 10))
+        self.stop_btn.pack(side=tk.LEFT, padx=(0, 20))
 
-        # 状态栏
+        # 辅助按钮
+        for label, cmd in [("selftest", "selftest"), ("doctor", "doctor")]:
+            tk.Button(
+                btn_bar, text=label, bg=C["surface"], fg=C["subtext"],
+                font=(FONT_FAMILY_UI, FONT_SIZE_BTN - 1),
+                relief=tk.FLAT, padx=10, pady=3,
+                activebackground=C["overlay"], activeforeground=C["text"],
+                command=lambda c=cmd: self._run_cmd([c]), cursor="hand2",
+            ).pack(side=tk.LEFT, padx=(0, 6))
+
+        # 清空按钮（右侧）
+        tk.Button(
+            btn_bar, text="清空", bg=C["surface"], fg=C["muted"],
+            font=(FONT_FAMILY_UI, FONT_SIZE_BTN - 1),
+            relief=tk.FLAT, padx=8, pady=3,
+            activebackground=C["overlay"], activeforeground=C["text"],
+            command=self._clear_log, cursor="hand2",
+        ).pack(side=tk.RIGHT)
+
+        # ── 日志输出 ──
+        log_frame = tk.Frame(main, bg=C["border"], padx=1, pady=1)
+        log_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 8))
+
+        self.log = scrolledtext.ScrolledText(
+            log_frame, bg=C["log_bg"], fg=C["log_fg"],
+            insertbackground=C["accent"],
+            font=(FONT_FAMILY, FONT_SIZE),
+            relief=tk.FLAT, wrap=tk.WORD,
+            state=tk.DISABLED,
+            padx=10, pady=8,
+            highlightthickness=0,
+        )
+        self.log.pack(fill=tk.BOTH, expand=True)
+
+        # 日志文本标签样式
+        self.log.tag_configure("error", foreground=C["error"])
+        self.log.tag_configure("success", foreground=C["accent2"])
+        self.log.tag_configure("muted", foreground=C["muted"])
+        self.log.tag_configure("accent", foreground=C["accent"])
+
+        # ── 状态栏 ──
+        status_bar = tk.Frame(main, bg=C["bg"])
+        status_bar.pack(fill=tk.X)
+
         self.status_var = tk.StringVar(value="就绪")
-        tk.Label(self.root, textvariable=self.status_var, bg=BG, fg=LOG_FG,
-                 font=("Segoe UI", 9), anchor=tk.W).pack(fill=tk.X, padx=12, pady=(0, 4))
+        self.status_label = tk.Label(
+            status_bar, textvariable=self.status_var, bg=C["bg"],
+            fg=C["muted"], font=(FONT_FAMILY_UI, 9), anchor=tk.W,
+        )
+        self.status_label.pack(side=tk.LEFT)
 
-    # ── 日志 ────────────────────────────────────────────
+        # 版本标签
+        try:
+            from forge import __version__
+            ver = __version__
+        except Exception:
+            ver = "dev"
+        tk.Label(
+            status_bar, text=f"v{ver}", bg=C["bg"], fg=C["muted"],
+            font=(FONT_FAMILY_UI, 9), anchor=tk.E,
+        ).pack(side=tk.RIGHT)
+
+    # ── 日志 ─────────────────────────────────────────────
     def _append(self, text: str, tag: str = ""):
         self.log.configure(state=tk.NORMAL)
-        # 行数上限裁剪（off-by-one 修复：+1 确保精确保留 MAX_LOG_LINES 行）
         line_count = int(self.log.index("end-1c").split(".")[0])
         if line_count > MAX_LOG_LINES:
             self.log.delete("1.0", f"{line_count - MAX_LOG_LINES + 1}.0")
@@ -168,7 +339,7 @@ class ForgeApp:
         self.log.delete("1.0", tk.END)
         self.log.configure(state=tk.DISABLED)
 
-    # ── 执行 ────────────────────────────────────────────
+    # ── 执行 ─────────────────────────────────────────────
     def _run_task(self):
         task = self.task_entry.get().strip()
         if not task:
@@ -193,13 +364,12 @@ class ForgeApp:
         self._running = True
         self.run_btn.configure(state=tk.DISABLED)
         self.stop_btn.configure(state=tk.NORMAL)
-        # 状态栏显示 run.py 之后的完整子命令（含任务和策略）
         run_py_idx = next((i for i, v in enumerate(cmd) if v == str(RUN_PY)), -1)
         status_text = " ".join(cmd[run_py_idx + 1:]) if run_py_idx >= 0 else " ".join(cmd)
         self.status_var.set(f"运行中: {status_text}")
 
         self._clear_log()
-        self._append(f"$ {' '.join(cmd)}\n\n")
+        self._append(f"$ {' '.join(cmd)}\n\n", "muted")
 
         threading.Thread(target=self._exec, args=(cmd,), daemon=True).start()
 
@@ -213,14 +383,13 @@ class ForgeApp:
                 cwd=str(FORGE_REPO),
                 bufsize=1,
             )
-            if sys.platform == "win32":
+            if IS_WINDOWS:
                 kwargs["creationflags"] = (
                     subprocess.CREATE_NEW_PROCESS_GROUP
                     | subprocess.CREATE_NO_WINDOW
                 )
             self._proc = subprocess.Popen(cmd, **kwargs)
 
-            # 批量刷新：累积行，定期写入 UI
             buffer: list[str] = []
             for line in self._proc.stdout:
                 buffer.append(line)
@@ -231,11 +400,14 @@ class ForgeApp:
                 self.root.after(0, self._append, "".join(buffer))
 
             rc = self._proc.wait()
-            tag = "" if rc == 0 else "err"
-            self.root.after(0, self._append, f"\n[退出码: {rc}]\n", tag)
-            self.root.after(0, self.status_var.set, f"完成 (exit {rc})")
+            if rc == 0:
+                self.root.after(0, self._append, f"\n✓ 完成 (exit {rc})\n", "success")
+            else:
+                self.root.after(0, self._append, f"\n✗ 退出码: {rc}\n", "error")
+            self.root.after(0, self.status_var.set,
+                           f"{'完成' if rc == 0 else '失败'} (exit {rc})")
         except Exception as e:
-            self.root.after(0, self._append, f"\n[错误: {e}]\n", "err")
+            self.root.after(0, self._append, f"\n✗ 错误: {e}\n", "error")
             self.root.after(0, self.status_var.set, "出错")
         finally:
             self._running = False
@@ -245,7 +417,7 @@ class ForgeApp:
 
     def _stop(self):
         if self._proc and self._proc.poll() is None:
-            if sys.platform == "win32":
+            if IS_WINDOWS:
                 try:
                     self._proc.send_signal(signal.CTRL_BREAK_EVENT)
                     self._proc.wait(timeout=3)
@@ -253,10 +425,15 @@ class ForgeApp:
                     try:
                         self._proc.terminate()
                     except Exception:
-                        pass  # 进程已消失
+                        pass
             else:
-                self._proc.terminate()
-            self._append("\n[已终止]\n", "err")
+                # Unix: 发 SIGTERM，超时后 SIGKILL
+                try:
+                    self._proc.terminate()
+                    self._proc.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    self._proc.kill()
+            self._append("\n■ 已终止\n", "error")
             self.status_var.set("已停止")
 
     def _on_close(self):
@@ -267,13 +444,8 @@ class ForgeApp:
 
 
 def main():
+    _setup_dpi()
     root = tk.Tk()
-    # Windows DPI 适配
-    try:
-        from ctypes import windll
-        windll.shcore.SetProcessDpiAwareness(1)
-    except Exception:
-        pass
     app = ForgeApp(root)
     root.mainloop()
 
