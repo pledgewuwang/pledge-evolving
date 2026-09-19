@@ -5,6 +5,7 @@ pledge-evolving 首次运行向导 — 交互式配置 API 密钥
 
 from __future__ import annotations
 
+import getpass
 import json
 import os
 import sys
@@ -93,7 +94,7 @@ def _get_api_key(provider: dict) -> str:
 
     print(f"\n请输入你的 {provider['name']} API 密钥：")
     print(f"  （将保存到 ~/.forge/forge.patch.json，不会上传）")
-    key = input(f"  {provider['env_key']} > ").strip()
+    key = getpass.getpass(f"  {provider['env_key']} > ").strip()
     return key
 
 
