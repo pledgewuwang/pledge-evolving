@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -454,6 +455,11 @@ def cmd_smoke(args) -> int:
     return 0 if outcome.ok else 1
 
 
+def cmd_setup(args) -> int:
+    from .cmd_setup import cmd_setup as _impl
+    return _impl(args)
+
+
 def cmd_selftest(args) -> int:
     from .selftest import run_selftest
 
@@ -639,6 +645,10 @@ def build_parser() -> argparse.ArgumentParser:
                        help="JSON table {model: {baseUrl, <credential>}} read in-process")
     smoke.set_defaults(func=cmd_smoke)
 
+
+    setup = sub.add_parser("setup", help="first-run wizard: configure API keys interactively")
+    setup.set_defaults(func=cmd_setup)
+
     selftest = sub.add_parser("selftest", parents=[common], help="offline end-to-end verification")
     selftest.set_defaults(func=cmd_selftest)
 
@@ -657,3 +667,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
